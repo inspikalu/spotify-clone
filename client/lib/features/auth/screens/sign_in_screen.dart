@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify_clone/core/errors.dart';
 import 'package:spotify_clone/features/auth/auth_providers.dart';
 import 'package:spotify_clone/features/auth/screens/auth_form_widgets.dart';
 import 'package:spotify_clone/features/auth/screens/sign_up_screen.dart';
@@ -39,12 +40,33 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       navigator.popUntil((route) => route.isFirst);
     } catch (e) {
       messenger.showSnackBar(
-        SnackBar(content: Text('Log in failed: $e')),
+        SnackBar(content: Text(apiErrorMessage(e))),
       );
     } finally {
       if (mounted) {
         setState(() => _busy = false);
       }
+    }
+  }
+
+  Future<void> _forgotPassword() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter your email address first')),
+      );
+      return;
+    }
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(authRepositoryProvider).forgotPassword(email);
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('If an account exists for that email, a reset link is on its way.'),
+        ),
+      );
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(apiErrorMessage(e))));
     }
   }
 
@@ -73,7 +95,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 decoration: authInputDecoration('Password'),
                 validator: (v) => requiredValidator(v, 'Password'),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: _busy ? null : _forgotPassword,
+                  child: const Text('Forgot password?'),
+                ),
+              ),
+              const SizedBox(height: 8),
               FilledButton(
                 onPressed: _busy ? null : _logIn,
                 child: _busy
@@ -83,6 +113,18 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Text('Log in'),
+              ),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: null,
+                icon: const Icon(Icons.g_mobiledata, size: 28),
+                label: const Text('Continue with Google'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
               ),
             ],
           ),
