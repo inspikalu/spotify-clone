@@ -1,0 +1,17 @@
+node_modules/
+.env
+.env.*
+!.env.example
+backend/dist/
+client/build/
+client/.dart_tool/
+client/.packages
+client/.flutter-plugins
+client/.flutter-plugins-dependencies
+*.iml
+.idea/
+.vscode/
+supabase/.branches
+supabase/.temp
+supabase/.env
+*.log
