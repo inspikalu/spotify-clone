@@ -1,14 +1,16 @@
 # Plan: Phase 1 — Auth (incl. Phase 0 groundwork)
 
+> Execution note (2026-08-13): dev database pivoted to local Supabase CLI instance per stakeholder decision (see tech-stack.md change log). Group 1 Supabase tasks were executed against the local instance: `supabase init` + offset ports in `supabase/config.toml` (api 54323, db 54324, studio 54325, smtp 54326) + `supabase start --ignore-health-check` (health checks unreliable on this host — Known Issue in tech-stack.md). DB URL: `postgresql://postgres:postgres@127.0.0.1:54324/postgres`. Resend API key provided by stakeholder.
+
 Sequential groups. No group starts until the previous group's Verify passes.
 
 ## Group 1 — Repo baseline + Supabase project
-- [ ] Repo root: `git init`, then create `.gitignore` at repo root covering `node_modules/`, `.env`, `backend/dist/`, `client/build/`, `.dart_tool/`, `*.iml`, `.idea/`, `.vscode/`
-- [ ] Repo root: commit everything as the rollback baseline: `git add -A && git commit -m "baseline: specs/"`
-- [ ] Browser (user's account): create Supabase free-tier project named `spotify-clone` at https://supabase.com; from Project Settings → Database, copy the **direct** connection string (port 5432, host `db.<ref>.supabase.co`) — do NOT use the pooler port 6543 (see tech-stack.md Known Issues, carried into requirements.md)
-- [ ] Browser (user's account): create Resend account at https://resend.com; create API key; confirm the account-owner email is verified in the sandbox (see Known Issue in requirements.md)
-- [ ] Browser: generate the JWT signing secret locally: `openssl rand -base64 64` → record it for Group 2's `backend/.env`
-- [ ] **Verify**: `git log -1 --pretty=%s` → expect exactly `baseline: specs/` (and `git status --porcelain` → expect empty output)
+- [x] Repo root: `git init`, then create `.gitignore` at repo root covering `node_modules/`, `.env`, `backend/dist/`, `client/build/`, `.dart_tool/`, `*.iml`, `.idea/`, `.vscode/` — GOT: `git init` ok; .gitignore written (also covers `supabase/.branches`, `supabase/.temp`, `supabase/.env`)
+- [x] Repo root: commit everything as the rollback baseline: `git add -A && git commit -m "baseline: specs/"` — GOT: `[master (root-commit) 7b23dff] baseline: specs/ 9 files changed, 358 insertions(+)`
+- [x] Browser (user's account): create Supabase free-tier project named `spotify-clone` at https://supabase.com; from Project Settings → Database, copy the **direct** connection string (port 5432, host `db.<ref>.supabase.co`) — do NOT use the pooler port 6543 (see tech-stack.md Known Issues, carried into requirements.md) — GOT: superseded by stakeholder decision — local Supabase CLI instance instead. `supabase init` + `supabase/config.toml` port offsets (api 54323, db 54324, studio 54325, smtp 54326); `supabase start --ignore-health-check` → running; DB URL `postgresql://postgres:postgres@127.0.0.1:54324/postgres` (see tech-stack.md change log + Known Issues)
+- [x] Browser (user's account): create Resend account at https://resend.com; create API key; confirm the account-owner email is verified in the sandbox (see Known Issue in requirements.md) — GOT: API key provided by stakeholder (`re_Pq...XdP`); owner email still needed for Group 6 live delivery check — requested again there
+- [x] Browser: generate the JWT signing secret locally: `openssl rand -base64 64` → record it for Group 2's `backend/.env` — GOT: generated, stored at /tmp/opencode/jwt-secret (90 bytes), env-only
+- [x] **Verify**: `git log -1 --pretty=%s` → expect exactly `baseline: specs/` (and `git status --porcelain` → expect empty output) — GOT: `baseline: specs/` ✅ and `git status --porcelain` → empty (0 lines) ✅
 
 ## Group 2 — NestJS skeleton + Prisma schema + health check
 - [ ] Repo root: scaffold backend: `npx @nestjs/cli new backend --package-manager npm --skip-git --strict`
