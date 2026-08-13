@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { HealthController } from './health/health.controller';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 const REQUIRED_ENV = [
   'DATABASE_URL',
@@ -26,6 +28,8 @@ function validateEnv(config: Record<string, unknown>): Record<string, unknown> {
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     PrismaModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [HealthController],
 })

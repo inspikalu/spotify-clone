@@ -16,7 +16,7 @@
 - [ ] All Group verifies in plan.md pass, with pasted evidence (exact command output, not paraphrase):
   - Group 1: `git log -1 --pretty=%s` → `baseline: specs/`; `git status --porcelain` → empty
   - Group 2: `curl -s http://localhost:3000/health` → `{"status":"ok","db":"up"}`
-  - Group 3: `npm test` → `Test Suites: 5 passed, 5 total` / `Tests: 18 passed, 18 total`; `npm run test:e2e` → `Test Suites: 1 passed, 1 total` / `Tests: 10 passed, 10 total`
+  - Group 3: `npm test` → `Test Suites: 5 passed, 5 total` / `Tests: 19 passed, 19 total`; `npm run test:e2e` → `Test Suites: 1 passed, 1 total` / `Tests: 10 passed, 10 total`
   - Group 4: `flutter analyze` → `No issues found!`; `flutter test` → `All tests passed!`
   - Group 5: manual walkthrough steps 1–5 with observed screen states (pasted)
   - Group 6: curl → `202`; adb deep link → ResetPasswordScreen; reset → SignInScreen; login with new password → HomeScreen
