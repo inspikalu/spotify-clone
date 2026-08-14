@@ -27,19 +27,35 @@ export class UsersService {
     return this.prisma.user.update({ where: { id }, data: { passwordHash } });
   }
 
-  upsertGoogle(data: { googleSub: string; email: string; displayName?: string; avatarUrl?: string }) {
-    return this.prisma.user.upsert({
+  async upsertGoogle(data: {
+    googleSub: string;
+    email: string;
+    displayName?: string;
+    avatarUrl?: string;
+  }) {
+    const bySub = await this.prisma.user.findUnique({
       where: { googleSub: data.googleSub },
-      create: {
+    });
+    const existing =
+      bySub ??
+      (await this.prisma.user.findUnique({ where: { email: data.email } }));
+    if (existing) {
+      return this.prisma.user.update({
+        where: { id: existing.id },
+        data: {
+          googleSub: existing.googleSub ?? data.googleSub,
+          email: data.email,
+          displayName: data.displayName ?? existing.displayName,
+          avatarUrl: data.avatarUrl ?? existing.avatarUrl,
+        },
+      });
+    }
+    return this.prisma.user.create({
+      data: {
         googleSub: data.googleSub,
         email: data.email,
         displayName: data.displayName,
         avatarUrl: data.avatarUrl,
-      },
-      update: {
-        email: data.email,
-        displayName: data.displayName ?? undefined,
-        avatarUrl: data.avatarUrl ?? undefined,
       },
     });
   }

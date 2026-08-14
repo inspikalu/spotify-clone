@@ -31,7 +31,11 @@ export class AuthService {
     private readonly resend: Resend,
   ) {}
 
-  async signup(data: { email: string; password: string; displayName?: string }) {
+  async signup(data: {
+    email: string;
+    password: string;
+    displayName?: string;
+  }) {
     const existing = await this.users.findByEmail(data.email);
     if (existing) {
       throw new ConflictException('An account with this email already exists');
@@ -48,7 +52,10 @@ export class AuthService {
 
   async login(data: { email: string; password: string }) {
     const user = await this.users.findByEmail(data.email);
-    if (!user?.passwordHash || !(await this.password.verify(data.password, user.passwordHash))) {
+    if (
+      !user?.passwordHash ||
+      !(await this.password.verify(data.password, user.passwordHash))
+    ) {
       throw new UnauthorizedException('Invalid email or password');
     }
     const tokens = await this.issueTokenPair(user.id, user.email);
@@ -87,10 +94,14 @@ export class AuthService {
         html: `<p>Tap the link to reset your password:</p><p><a href="${link}">${link}</a></p>`,
       });
       if (error) {
-        this.logger.warn(`Password reset email delivery failed for ${email}: ${error.message}`);
+        this.logger.warn(
+          `Password reset email delivery failed for ${email}: ${error.message}`,
+        );
       }
     } catch (err) {
-      this.logger.warn(`Password reset email delivery failed for ${email}: ${String(err)}`);
+      this.logger.warn(
+        `Password reset email delivery failed for ${email}: ${String(err)}`,
+      );
     }
   }
 
@@ -104,9 +115,13 @@ export class AuthService {
     await this.users.updatePassword(user.id, passwordHash);
   }
 
-  private async issueTokenPair(userId: string, email: string): Promise<TokenPair> {
-    const accessExpiresIn = this.config.get<string>('ACCESS_TOKEN_TTL') as SignOptions['expiresIn'];
-    const refreshExpiresIn = this.config.get<string>('REFRESH_TOKEN_TTL') as SignOptions['expiresIn'];
+  async issueTokenPair(userId: string, email: string): Promise<TokenPair> {
+    const accessExpiresIn = this.config.get<string>(
+      'ACCESS_TOKEN_TTL',
+    ) as SignOptions['expiresIn'];
+    const refreshExpiresIn = this.config.get<string>(
+      'REFRESH_TOKEN_TTL',
+    ) as SignOptions['expiresIn'];
     const accessToken = await this.jwt.signAsync(
       { sub: userId, email, jti: randomUUID() },
       { expiresIn: accessExpiresIn ?? '15m' },
@@ -118,7 +133,12 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  safeUser(user: { id: string; email: string; displayName: string | null; avatarUrl: string | null }) {
+  safeUser(user: {
+    id: string;
+    email: string;
+    displayName: string | null;
+    avatarUrl: string | null;
+  }) {
     return {
       id: user.id,
       email: user.email,

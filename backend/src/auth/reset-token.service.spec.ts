@@ -10,7 +10,10 @@ const config = {
 
 describe('ResetTokenService', () => {
   it('sign returns a token that verify accepts, carrying the email', async () => {
-    const service = new ResetTokenService(new JwtService({ secret: 'test-secret' }), config);
+    const service = new ResetTokenService(
+      new JwtService({ secret: 'test-secret' }),
+      config,
+    );
     const token = await service.sign('user@test.local');
     await expect(service.verify(token)).resolves.toMatchObject({
       email: 'user@test.local',
@@ -21,20 +24,34 @@ describe('ResetTokenService', () => {
   it('verify rejects a token signed for a different purpose', async () => {
     const jwt = new JwtService({ secret: 'test-secret' });
     const service = new ResetTokenService(jwt, config);
-    const token = await jwt.signAsync({ email: 'user@test.local', purpose: 'other' });
-    await expect(service.verify(token)).rejects.toBeInstanceOf(UnauthorizedException);
+    const token = await jwt.signAsync({
+      email: 'user@test.local',
+      purpose: 'other',
+    });
+    await expect(service.verify(token)).rejects.toBeInstanceOf(
+      UnauthorizedException,
+    );
   });
 
   it('verify rejects a garbage token', async () => {
-    const service = new ResetTokenService(new JwtService({ secret: 'test-secret' }), config);
-    await expect(service.verify('not-a-jwt')).rejects.toBeInstanceOf(UnauthorizedException);
+    const service = new ResetTokenService(
+      new JwtService({ secret: 'test-secret' }),
+      config,
+    );
+    await expect(service.verify('not-a-jwt')).rejects.toBeInstanceOf(
+      UnauthorizedException,
+    );
   });
 
   it('verify rejects an expired token', async () => {
     const jwtMock = {
-      verifyAsync: jest.fn().mockRejectedValue(new TokenExpiredError('jwt expired', new Date())),
+      verifyAsync: jest
+        .fn()
+        .mockRejectedValue(new TokenExpiredError('jwt expired', new Date())),
     } as unknown as JwtService;
     const service = new ResetTokenService(jwtMock, config);
-    await expect(service.verify('expired-token')).rejects.toBeInstanceOf(UnauthorizedException);
+    await expect(service.verify('expired-token')).rejects.toBeInstanceOf(
+      UnauthorizedException,
+    );
   });
 });

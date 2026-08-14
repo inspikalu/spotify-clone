@@ -30,7 +30,7 @@ describe('AuthService', () => {
   const password = {
     hash: jest.fn(async (p: string) => `hashed:${p}`),
     verify: jest.fn(async () => true),
-  } as unknown as PasswordService;
+  } as unknown as jest.Mocked<PasswordService>;
   const resetTokens = {
     sign: jest.fn(async () => 'reset-token'),
     verify: jest.fn(),
@@ -55,14 +55,20 @@ describe('AuthService', () => {
 
   it('signup hashes the password and returns user + token pair', async () => {
     users.findByEmail.mockResolvedValue(null);
-    users.create.mockImplementation(async ({ email, passwordHash, displayName }) => ({
-      id: 'u1',
-      email,
-      passwordHash,
-      displayName: displayName ?? null,
-      avatarUrl: null,
-    }));
-    const result = await service.signup({ email: 'a@b.c', password: 'Password123!', displayName: 'Ann' });
+    users.create.mockImplementation(
+      async ({ email, passwordHash, displayName }) => ({
+        id: 'u1',
+        email,
+        passwordHash,
+        displayName: displayName ?? null,
+        avatarUrl: null,
+      }),
+    );
+    const result = await service.signup({
+      email: 'a@b.c',
+      password: 'Password123!',
+      displayName: 'Ann',
+    });
     expect(password.hash).toHaveBeenCalledWith('Password123!');
     expect(result.user.email).toBe('a@b.c');
     expect(result.accessToken).toBeTruthy();
@@ -71,30 +77,49 @@ describe('AuthService', () => {
 
   it('signup with an existing email throws ConflictException', async () => {
     users.findByEmail.mockResolvedValue({ id: 'u0', email: 'a@b.c' });
-    await expect(service.signup({ email: 'a@b.c', password: 'Password123!' })).rejects.toBeInstanceOf(
-      ConflictException,
-    );
+    await expect(
+      service.signup({ email: 'a@b.c', password: 'Password123!' }),
+    ).rejects.toBeInstanceOf(ConflictException);
   });
 
   it('login with correct credentials returns a token pair', async () => {
-    users.findByEmail.mockResolvedValue({ id: 'u1', email: 'a@b.c', passwordHash: 'hash', displayName: null, avatarUrl: null });
+    users.findByEmail.mockResolvedValue({
+      id: 'u1',
+      email: 'a@b.c',
+      passwordHash: 'hash',
+      displayName: null,
+      avatarUrl: null,
+    });
     password.verify.mockResolvedValue(true);
-    const result = await service.login({ email: 'a@b.c', password: 'Password123!' });
+    const result = await service.login({
+      email: 'a@b.c',
+      password: 'Password123!',
+    });
     expect(result.accessToken).toBeTruthy();
     expect(result.refreshToken).toBeTruthy();
   });
 
   it('login with a wrong password throws UnauthorizedException', async () => {
-    users.findByEmail.mockResolvedValue({ id: 'u1', email: 'a@b.c', passwordHash: 'hash', displayName: null, avatarUrl: null });
+    users.findByEmail.mockResolvedValue({
+      id: 'u1',
+      email: 'a@b.c',
+      passwordHash: 'hash',
+      displayName: null,
+      avatarUrl: null,
+    });
     password.verify.mockResolvedValue(false);
-    await expect(service.login({ email: 'a@b.c', password: 'wrong' })).rejects.toBeInstanceOf(
-      UnauthorizedException,
-    );
+    await expect(
+      service.login({ email: 'a@b.c', password: 'wrong' }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
   it('refresh rotates to a new pair and the new access token verifies', async () => {
     users.findById.mockResolvedValue({ id: 'u1', email: 'a@b.c' });
-    const oldRefresh = await jwt.signAsync({ sub: 'u1', email: 'a@b.c', type: 'refresh' });
+    const oldRefresh = await jwt.signAsync({
+      sub: 'u1',
+      email: 'a@b.c',
+      type: 'refresh',
+    });
     const pair = await service.refresh(oldRefresh);
     const decoded = await jwt.verifyAsync(pair.accessToken);
     expect(decoded.sub).toBe('u1');

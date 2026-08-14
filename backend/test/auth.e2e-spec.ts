@@ -12,7 +12,9 @@ describe('Auth (e2e)', () => {
   const password = 'Password123!';
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
     app = moduleRef.createNestApplication();
     await app.init();
     prisma = moduleRef.get(PrismaService);
