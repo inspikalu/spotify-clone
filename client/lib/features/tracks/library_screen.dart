@@ -7,20 +7,38 @@ import 'package:spotify_clone/features/tracks/track.dart';
 import 'package:spotify_clone/features/tracks/tracks_providers.dart';
 import 'package:spotify_clone/features/tracks/upload_track_screen.dart';
 
-class LibraryScreen extends ConsumerWidget {
+class LibraryScreen extends ConsumerStatefulWidget {
   const LibraryScreen({super.key});
+
+  @override
+  ConsumerState<LibraryScreen> createState() => _LibraryScreenState();
+}
+
+class _LibraryScreenState extends ConsumerState<LibraryScreen> {
+  bool _sortAz = false;
 
   Future<void> _refresh(WidgetRef ref) async {
     ref.invalidate(tracksProvider);
     await ref.read(tracksProvider.future);
   }
 
+  List<Track> _sorted(List<Track> tracks) {
+    if (!_sortAz) {
+      return tracks;
+    }
+    final sorted = [...tracks];
+    sorted.sort(
+      (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+    );
+    return sorted;
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final tracksAsync = ref.watch(tracksProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Library'),
+        title: const Text('Your Library'),
         actions: [
           IconButton(
             tooltip: 'Upload track',
@@ -40,35 +58,70 @@ class LibraryScreen extends ConsumerWidget {
       ),
       body: switch (tracksAsync) {
         AsyncData(:final value) when value.isEmpty => const _EmptyLibrary(),
-        AsyncData(:final value) => RefreshIndicator(
-            onRefresh: () => _refresh(ref),
-            child: ListView.separated(
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: value.length,
-              separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final track = value[index];
-                return ListTile(
-                  onTap: () => ref
-                      .read(playbackControllerProvider.notifier)
-                      .playTrack(track, value),
-                  leading: _TrackCover(track: track),
-                  title: Text(
-                    track.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+        AsyncData(:final value) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                child: TextButton.icon(
+                  onPressed: () => setState(() => _sortAz = !_sortAz),
+                  icon: const Icon(Icons.swap_vert, size: 16),
+                  label: Text(
+                    _sortAz ? '↓↑ A–Z' : '↓↑ Recents',
+                    style: const TextStyle(fontSize: 13),
                   ),
-                  subtitle: Text(
-                    track.artist,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () => _refresh(ref),
+                  child: ListView.separated(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: value.length,
+                    separatorBuilder: (_, _) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final track = _sorted(value)[index];
+                      return ListTile(
+                        onTap: () => ref
+                            .read(playbackControllerProvider.notifier)
+                            .playTrack(track, value),
+                        leading: _TrackCover(track: track),
+                        title: Text(
+                          track.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        subtitle: Text(
+                          track.album == null
+                              ? 'Single • ${track.artist}'
+                              : 'Album • ${track.artist}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Color(0xFFB3B3B3),
+                            fontSize: 13,
+                          ),
+                        ),
+                        trailing: track.durationLabel.isEmpty
+                            ? null
+                            : Text(
+                                track.durationLabel,
+                                style: const TextStyle(
+                                  color: Color(0xFFB3B3B3),
+                                  fontSize: 13,
+                                ),
+                              ),
+                      );
+                    },
                   ),
-                  trailing: track.durationLabel.isEmpty
-                      ? null
-                      : Text(track.durationLabel),
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           ),
         AsyncError(:final error) => _LibraryError(
             message: apiErrorMessage(error),
@@ -102,28 +155,34 @@ class _TrackCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final coverUrl = track.coverUrl;
-    if (coverUrl == null) {
-      return CircleAvatar(
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        child: Icon(
-          Icons.music_note,
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-      );
-    }
-    return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: coverUrl,
-        width: 40,
-        height: 40,
-        fit: BoxFit.cover,
-        errorWidget: (_, _, _) => CircleAvatar(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-          child: Icon(
-            Icons.music_note,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: SizedBox(
+        width: 56,
+        height: 56,
+        child: coverUrl == null
+            ? const _CoverPlaceholder()
+            : CachedNetworkImage(
+                imageUrl: coverUrl,
+                fit: BoxFit.cover,
+                errorWidget: (_, _, _) => const _CoverPlaceholder(),
+              ),
+      ),
+    );
+  }
+}
+
+class _CoverPlaceholder extends StatelessWidget {
+  const _CoverPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 56,
+      height: 56,
+      color: const Color(0xFF282828),
+      child: const Center(
+        child: Icon(Icons.music_note, color: Color(0xFFB3B3B3), size: 24),
       ),
     );
   }

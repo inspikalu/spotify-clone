@@ -77,4 +77,65 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('First Track'), findsOneWidget);
   });
+
+  testWidgets('Library rows show Album/Single subtitles and the sort toggle reorders',
+      (tester) async {
+    final newer = Track(
+      id: '2',
+      title: 'Zeta',
+      artist: 'Artist Z',
+      album: 'Album X',
+      durationMs: 120000,
+      audioUrl: 'http://test.local/audio/2.mp3',
+      createdAt: DateTime(2026, 8, 14),
+    );
+    final older = Track(
+      id: '1',
+      title: 'Alpha',
+      artist: 'Artist A',
+      durationMs: 90000,
+      audioUrl: 'http://test.local/audio/1.mp3',
+      createdAt: DateTime(2026, 8, 13),
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(_FakeAuthRepository()),
+          tracksProvider.overrideWith((ref) async => [newer, older]),
+          audioEngineProvider.overrideWithValue(FakeAudioEngine()),
+        ],
+        child: const MaterialApp(home: NavShell()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Your Library'), findsOneWidget);
+    expect(find.text('Album • Artist Z'), findsOneWidget);
+    expect(find.text('Single • Artist A'), findsOneWidget);
+    expect(find.text('↓↑ Recents'), findsOneWidget);
+
+    final firstRow = find.byType(ListTile).first;
+    expect(
+      find.descendant(of: firstRow, matching: find.text('Zeta')),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('↓↑ Recents'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('↓↑ A–Z'), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(ListTile).first, matching: find.text('Alpha')),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('↓↑ A–Z'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('↓↑ Recents'), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(ListTile).first, matching: find.text('Zeta')),
+      findsOneWidget,
+    );
+  });
 }
