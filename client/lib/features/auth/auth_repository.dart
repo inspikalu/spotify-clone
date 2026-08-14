@@ -58,6 +58,17 @@ class AuthRepository {
     await _api.clearTokens();
   }
 
+  Future<String> googleSignIn(String idToken) async {
+    final response = await _api.post('/auth/google', data: {'idToken': idToken});
+    final json = response.data as Map<String, dynamic>;
+    final tokenPair = TokenPair.fromJson({
+      'accessToken': json['accessToken'] as String,
+      'refreshToken': json['refreshToken'] as String,
+    });
+    await _storeTokens(tokenPair);
+    return (json['user'] as Map<String, dynamic>)['email'] as String;
+  }
+
   Future<void> forgotPassword(String email) async {
     await _api.post('/auth/forgot-password', data: {'email': email});
   }

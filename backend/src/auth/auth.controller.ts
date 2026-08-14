@@ -9,31 +9,56 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { GoogleAuthService } from './google-auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(
+    private readonly auth: AuthService,
+    private readonly googleAuth: GoogleAuthService,
+  ) {}
 
   @Post('signup')
   async signup(
     @Body() body: { email?: string; password?: string; displayName?: string },
   ) {
     if (!body.email || !EMAIL_PATTERN.test(body.email)) {
-      return { statusCode: 400, message: 'A valid email is required', path: '/auth/signup' };
+      return {
+        statusCode: 400,
+        message: 'A valid email is required',
+        path: '/auth/signup',
+      };
     }
     if (!body.password || body.password.length < 8) {
-      return { statusCode: 400, message: 'Password must be at least 8 characters', path: '/auth/signup' };
+      return {
+        statusCode: 400,
+        message: 'Password must be at least 8 characters',
+        path: '/auth/signup',
+      };
     }
-    return this.auth.signup({ email: body.email, password: body.password, displayName: body.displayName });
+    return this.auth.signup({
+      email: body.email,
+      password: body.password,
+      displayName: body.displayName,
+    });
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() body: { email?: string; password?: string }) {
-    return this.auth.login({ email: body.email ?? '', password: body.password ?? '' });
+    return this.auth.login({
+      email: body.email ?? '',
+      password: body.password ?? '',
+    });
+  }
+
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  async google(@Body() body: { idToken?: string }) {
+    return this.googleAuth.authenticate(body.idToken ?? '');
   }
 
   @Post('refresh')
@@ -55,7 +80,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() body: { token?: string; newPassword?: string }) {
     if (!body.token || !body.newPassword || body.newPassword.length < 8) {
-      return { statusCode: 400, message: 'A valid token and password (≥ 8 chars) are required', path: '/auth/reset-password' };
+      return {
+        statusCode: 400,
+        message: 'A valid token and password (≥ 8 chars) are required',
+        path: '/auth/reset-password',
+      };
     }
     await this.auth.resetPassword(body.token, body.newPassword);
     return { message: 'Password reset successfully' };
@@ -63,7 +92,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async me(@Req() req: { user: { userId: string; email: string } }) {
+  me(@Req() req: { user: { userId: string; email: string } }) {
     return { id: req.user.userId, email: req.user.email };
   }
 }

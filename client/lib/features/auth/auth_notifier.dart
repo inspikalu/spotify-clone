@@ -61,4 +61,9 @@ class AuthNotifier extends Notifier<AuthState> {
     await _repository.logOut();
     state = const AuthUnauthenticated();
   }
+
+  Future<void> googleSignIn(String idToken) async {
+    final email = await _repository.googleSignIn(idToken);
+    state = AuthAuthenticated(email: email);
+  }
 }

@@ -18,7 +18,9 @@ export class ResetTokenService {
   ) {}
 
   sign(email: string): Promise<string> {
-    const ttl = this.config.get<string>('RESET_TOKEN_TTL') as SignOptions['expiresIn'];
+    const ttl = this.config.get<string>(
+      'RESET_TOKEN_TTL',
+    ) as SignOptions['expiresIn'];
     return this.jwt.signAsync(
       { email, purpose: RESET_PURPOSE },
       { expiresIn: ttl ?? '15m' },
