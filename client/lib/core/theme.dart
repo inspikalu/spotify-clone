@@ -15,7 +15,10 @@ abstract final class AppTheme {
       brightness: Brightness.dark,
       colorScheme: scheme,
       scaffoldBackgroundColor: const Color(0xFF121212),
-      textTheme: GoogleFonts.interTextTheme(),
+      textTheme: GoogleFonts.interTextTheme().apply(
+        bodyColor: Colors.white,
+        displayColor: Colors.white,
+      ),
     );
     return base.copyWith(
       inputDecorationTheme: InputDecorationTheme(
