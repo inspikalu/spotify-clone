@@ -1,6 +1,7 @@
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:spotify_clone/core/deep_link.dart';
 import 'package:spotify_clone/core/theme.dart';
 import 'package:spotify_clone/features/auth/auth_notifier.dart';
@@ -12,6 +13,14 @@ import 'package:spotify_clone/features/auth/screens/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await JustAudioBackground.init(
+    androidNotificationChannelId:
+        'com.spotifyclone.spotify_clone.channel.audio',
+    androidNotificationChannelName: 'Playback',
+    notificationColor: const Color(0xFF1DB954),
+    androidStopForegroundOnPause: true,
+  );
 
   final appLinks = AppLinks();
   Uri? initialLink;

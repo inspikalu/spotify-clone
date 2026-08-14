@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify_clone/core/errors.dart';
+import 'package:spotify_clone/features/player/player_providers.dart';
 import 'package:spotify_clone/features/tracks/track.dart';
 import 'package:spotify_clone/features/tracks/tracks_providers.dart';
 import 'package:spotify_clone/features/tracks/upload_track_screen.dart';
@@ -48,6 +49,9 @@ class LibraryScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final track = value[index];
                 return ListTile(
+                  onTap: () => ref
+                      .read(playbackControllerProvider.notifier)
+                      .playTrack(track, value),
                   leading: _TrackCover(track: track),
                   title: Text(
                     track.title,
