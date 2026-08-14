@@ -186,13 +186,7 @@ describe('TracksService', () => {
       }),
     ).rejects.toThrow(InternalServerErrorException);
     expect(prisma.track.delete).toHaveBeenCalledWith({ where: { id: 't1' } });
-    try {
-      await expect(fsp.access(audioPath)).rejects.toThrow();
-    } catch (e2) {
-      console.log('ACCESS-CHECK STACK:', (e2 as Error).stack);
-      throw e2;
-    }
-    console.log('AFTER access check');
+    await expect(fsp.access(audioPath)).rejects.toThrow();
   });
 
   it('rolls back the audio object and row when the cover upload fails', async () => {
