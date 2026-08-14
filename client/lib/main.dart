@@ -5,7 +5,7 @@ import 'package:spotify_clone/core/deep_link.dart';
 import 'package:spotify_clone/core/theme.dart';
 import 'package:spotify_clone/features/auth/auth_notifier.dart';
 import 'package:spotify_clone/features/auth/auth_providers.dart';
-import 'package:spotify_clone/features/auth/screens/home_screen.dart';
+import 'package:spotify_clone/core/navigation/nav_shell.dart';
 import 'package:spotify_clone/features/auth/screens/reset_password_screen.dart';
 import 'package:spotify_clone/features/auth/screens/sign_in_screen.dart';
 import 'package:spotify_clone/features/auth/screens/splash_screen.dart';
@@ -70,7 +70,7 @@ class _AuthGate extends ConsumerWidget {
     return switch (ref.watch(authStateProvider)) {
       AuthUnknown() => const SplashScreen(),
       AuthUnauthenticated() => const SignInScreen(),
-      AuthAuthenticated() => const HomeScreen(),
+      AuthAuthenticated() => const NavShell(),
     };
   }
 }
