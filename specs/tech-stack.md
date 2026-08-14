@@ -4,9 +4,10 @@
 - **Flutter**: `3.44.x` (stable channel) — cross-platform, single codebase for iOS + Android, matches stakeholder requirement.
 - **Dart**: `3.12.x` — ships with Flutter 3.44.
 - **State management**: `flutter_riverpod ^2.6.x` — testable, scales better than `provider` for an app this size (auth state, playback state, library state all cross-cutting).
-- **Audio playback**: `just_audio ^0.9.x` + `audio_service ^0.18.x` — the de facto standard for background/lock-screen audio playback in Flutter; anything homegrown here is a known time sink.
+- **Audio playback**: `just_audio ^0.9.x` + `audio_service ^0.18.x` + `just_audio_background ^0.0.1-beta.x` (official bridge between the two — supplies the `AudioHandler` (media notification + lock-screen artwork) that `audio_service` requires) — the de facto standard for background/lock-screen audio playback in Flutter; anything homegrown here is a known time sink.
 - **Secure token storage**: `flutter_secure_storage ^9.x`.
 - **Image caching**: `cached_network_image ^3.x` — required for smooth 60fps scrolling on album art shelves.
+- **File picking**: `file_picker ^8.x` — device file selection for the upload form (audio file + cover art image); no web-view fallback needed on the mobile targets.
 - **HTTP client**: `dio ^4.x` — interceptors for attaching the JWT to every request and a single retry-on-401 refresh path; `http` would need the refresh logic hand-rolled in a wrapper.
 - **Google sign-in (client)**: `google_sign_in ^6.x` — the standard native on-device Google OAuth flow on Android/iOS (returns an ID token the backend verifies).
 - **Fonts**: `Inter` or `Manrope` (Google Fonts) as a visual substitute for Spotify's proprietary Circular typeface — do not bundle Circular itself, it is not licensed for use here. Delivered via `google_fonts ^6.x`.
@@ -40,6 +41,8 @@
 - [2026-08-13] Phase 1/Group 1: pivoted the *development* database to a local Supabase CLI instance (docker) per stakeholder decision — `supabase start` on offset ports (API 54323, Postgres 54324, Studio 54325) avoiding the pre-existing stack on 54321/54322; cloud free-tier stays the deployment target. Prisma `DATABASE_URL` is the direct local Postgres (no pooler involved).
 - [2026-08-13] Phase 1/Group 1: tech-stack Known Issue added for the host's port collision (see Known Issues).
 - [2026-08-13] Phase 1: added `resend` as the transactional email provider because the stakeholder-approved password-reset scope requires sending reset links from the own-implementation auth flow (Supabase Auth is not used).
+- [2026-08-14] Phase 2: added `just_audio_background ^0.0.1-beta.x` because `audio_service` requires a full `AudioHandler` implementation and this is the official `just_audio` ↔ `audio_service` bridge supplying it (media notification, lock-screen artwork); hand-rolling a custom `AudioHandler` is a known time sink.
+- [2026-08-14] Phase 2: added `file_picker ^8.x` because the upload form needs device file selection (audio + cover art) and no in-stack package provides it.
 - [2026-08-13] Phase 1: added `@nestjs/jwt ^11.x`, `bcryptjs ^3.x`, and `google-auth-library ^9.x` because the own-implementation access/refresh flow needs a signing service, password hashing, and mobile ID-token verification respectively.
 
 ## Known Issues
