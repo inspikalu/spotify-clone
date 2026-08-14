@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.spotifyclone.spotify_clone"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
