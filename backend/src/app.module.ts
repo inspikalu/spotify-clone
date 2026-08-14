@@ -4,6 +4,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { HealthController } from './health/health.controller';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { TracksModule } from './tracks/tracks.module';
 
 const REQUIRED_ENV = [
   'DATABASE_URL',
@@ -13,6 +14,10 @@ const REQUIRED_ENV = [
   'RESET_TOKEN_TTL',
   'RESEND_API_KEY',
   'RESEND_FROM',
+  'SUPABASE_URL',
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'SUPABASE_AUDIO_BUCKET',
+  'SUPABASE_COVERS_BUCKET',
 ];
 
 function validateEnv(config: Record<string, unknown>): Record<string, unknown> {
@@ -30,6 +35,7 @@ function validateEnv(config: Record<string, unknown>): Record<string, unknown> {
     PrismaModule,
     UsersModule,
     AuthModule,
+    TracksModule,
   ],
   controllers: [HealthController],
 })
