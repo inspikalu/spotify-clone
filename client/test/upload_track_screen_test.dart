@@ -1,9 +1,9 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
-// ignore: implementation_imports — FilePickerPlatform is the only test seam in file_picker 11.x
-import 'package:file_picker/src/platform/file_picker_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,25 +13,47 @@ import 'package:spotify_clone/features/tracks/tracks_providers.dart';
 import 'package:spotify_clone/features/tracks/tracks_repository.dart';
 import 'package:spotify_clone/features/tracks/upload_track_screen.dart';
 
-class _FakePicker extends FilePickerPlatform {
-  FilePickerResult? result;
+final class _TestPlatformFile extends PlatformFile {
+  _TestPlatformFile(this._path);
+
+  final String _path;
 
   @override
-  Future<FilePickerResult?> pickFiles({
+  String get name => _path.split(Platform.pathSeparator).last;
+
+  @override
+  Uri get uri => Uri.file(_path);
+
+  @override
+  XFile get xFile => XFile(_path);
+
+  @override
+  Future<int> length() => xFile.length();
+
+  @override
+  Future<Uint8List> readAsBytes() => xFile.readAsBytes();
+
+  @override
+  Stream<Uint8List> readAsByteStream() => xFile.openRead();
+}
+
+class _FakePicker extends FilePickerPlatform {
+  PlatformFile? file;
+
+  @override
+  Future<PlatformFile?> pickFile({
     String? dialogTitle,
     String? initialDirectory,
     FileType type = FileType.any,
     List<String>? allowedExtensions,
     Function(FilePickerStatus)? onFileLoading,
     int compressionQuality = 0,
-    bool allowMultiple = false,
-    bool withData = false,
-    bool withReadStream = false,
-    bool lockParentWindow = false,
-    bool readSequential = false,
-    bool cancelUploadOnWindowBlur = true,
+    AndroidOptions androidOptions = const AndroidOptions(),
+    WindowsOptions windowsOptions = const WindowsOptions(),
+    LinuxOptions linuxOptions = const LinuxOptions(),
+    WebOptions webOptions = const WebOptions(),
   }) async =>
-      result;
+      file;
 }
 
 class _FakeTracksRepository extends TracksRepository {
@@ -118,9 +140,7 @@ void main() {
     expect(find.text('Pick an audio file first'), findsOneWidget);
 
     final audio = File('${tempDir.path}/demo.mp3')..writeAsStringSync('audio');
-    picker.result = FilePickerResult([
-      PlatformFile(name: 'demo.mp3', size: 5, path: audio.path),
-    ]);
+    picker.file = _TestPlatformFile(audio.path);
     await tester.tap(find.text('Pick audio file'));
     await tester.pump();
 
@@ -137,15 +157,11 @@ void main() {
 
     final audio = File('${tempDir.path}/demo.mp3')..writeAsStringSync('audio');
     final cover = File('${tempDir.path}/cover.jpg')..writeAsStringSync('cover');
-    picker.result = FilePickerResult([
-      PlatformFile(name: 'demo.mp3', size: 5, path: audio.path),
-    ]);
+    picker.file = _TestPlatformFile(audio.path);
     await tester.tap(find.text('Pick audio file'));
     await tester.pump();
 
-    picker.result = FilePickerResult([
-      PlatformFile(name: 'cover.jpg', size: 5, path: cover.path),
-    ]);
+    picker.file = _TestPlatformFile(cover.path);
     await tester.tap(find.text('Pick cover image (optional)'));
     await tester.pump();
 

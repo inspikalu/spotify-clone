@@ -32,29 +32,23 @@ class _UploadTrackScreenState extends ConsumerState<UploadTrackScreen> {
   }
 
   Future<void> _pickAudio() async {
-    final result = await FilePicker.pickFiles(
-      type: FileType.audio,
-      allowMultiple: false,
-    );
-    if (result == null) {
+    final file = await FilePicker.pickFile(type: FileType.audio);
+    if (file == null) {
       return;
     }
     setState(() {
-      _audioFile = result.files.single;
+      _audioFile = file;
       _error = null;
     });
   }
 
   Future<void> _pickCover() async {
-    final result = await FilePicker.pickFiles(
-      type: FileType.image,
-      allowMultiple: false,
-    );
-    if (result == null) {
+    final file = await FilePicker.pickFile(type: FileType.image);
+    if (file == null) {
       return;
     }
     setState(() {
-      _coverFile = result.files.single;
+      _coverFile = file;
       _error = null;
     });
   }
