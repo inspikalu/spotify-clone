@@ -5,6 +5,8 @@ abstract final class AppTheme {
   static const _seed = Color(0xFF1DB954);
 
   static ThemeData dark() {
+    GoogleFonts.config.allowRuntimeFetching = false;
+
     final scheme = ColorScheme.fromSeed(
       seedColor: _seed,
       brightness: Brightness.dark,
@@ -16,6 +18,20 @@ abstract final class AppTheme {
       textTheme: GoogleFonts.interTextTheme(),
     );
     return base.copyWith(
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF1E1E1E),
+        labelStyle: const TextStyle(color: Colors.white70),
+        hintStyle: const TextStyle(color: Color(0xFFB3B3B3)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: scheme.primary,

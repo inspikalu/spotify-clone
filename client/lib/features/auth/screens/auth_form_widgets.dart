@@ -2,16 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:spotify_clone/core/theme.dart';
 
 InputDecoration authInputDecoration(String label, {String? hint}) {
-  return InputDecoration(
-    labelText: label,
-    hintText: hint,
-    filled: true,
-    fillColor: const Color(0xFF1E1E1E),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide.none,
-    ),
-  );
+  return InputDecoration(labelText: label, hintText: hint);
 }
 
 class AuthScaffold extends StatelessWidget {
@@ -43,20 +34,26 @@ class AuthScaffold extends StatelessWidget {
                   Text(
                     AppTheme.appName,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.white),
                   ),
                   const SizedBox(height: 32),
                   Text(
                     title,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.copyWith(color: Colors.white),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     subtitle,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey.shade500,
+                          color: Colors.white70,
                         ),
                   ),
                   const SizedBox(height: 24),
