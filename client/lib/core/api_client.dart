@@ -46,6 +46,13 @@ class ApiClient {
   Future<Response<dynamic>> post(String path, {Object? data}) =>
       _dio.post<dynamic>(path, data: data);
 
+  Future<Response<dynamic>> postMultipart(
+    String path,
+    FormData formData, {
+    ProgressCallback? onSendProgress,
+  }) =>
+      _dio.post<dynamic>(path, data: formData, onSendProgress: onSendProgress);
+
   Future<void> clearTokens() async {
     await _storage.delete(accessTokenKey);
     await _storage.delete(refreshTokenKey);
