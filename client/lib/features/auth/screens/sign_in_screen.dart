@@ -138,7 +138,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               const SizedBox(height: 16),
               OutlinedButton.icon(
                 onPressed: _busy ? null : _googleSignIn,
-                icon: const Icon(Icons.g_mobiledata, size: 28),
+                icon: Image.asset(
+                  'assets/images/google_g.png',
+                  width: 24,
+                  height: 24,
+                ),
                 label: const Text('Continue with Google'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(52),
