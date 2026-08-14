@@ -67,7 +67,7 @@ void main() {
 
     await tester.tap(find.text('Home'));
     await tester.pumpAndSettle();
-    expect(find.text('Signed in as me@test.local'), findsOneWidget);
+    expect(find.text('All uploaded tracks'), findsOneWidget);
 
     await tester.tap(find.text('Search'));
     await tester.pumpAndSettle();
