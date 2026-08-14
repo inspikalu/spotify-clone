@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify_clone/core/deep_link.dart';
@@ -9,15 +10,35 @@ import 'package:spotify_clone/features/auth/screens/reset_password_screen.dart';
 import 'package:spotify_clone/features/auth/screens/sign_in_screen.dart';
 import 'package:spotify_clone/features/auth/screens/splash_screen.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final resetToken = extractResetToken();
+
+  final appLinks = AppLinks();
+  Uri? initialLink;
+  try {
+    initialLink = await appLinks.getInitialLink();
+  } on Exception {
+    initialLink = null;
+  }
+  final initialToken = resetTokenFromUri(initialLink);
+
+  final container = ProviderContainer(
+    overrides: [
+      if (initialToken != null)
+        resetTokenProvider.overrideWith((ref) => initialToken),
+    ],
+  );
+
+  appLinks.uriLinkStream.listen((uri) {
+    final token = resetTokenFromUri(uri);
+    if (token != null) {
+      container.read(resetTokenProvider.notifier).state = token;
+    }
+  });
+
   runApp(
-    ProviderScope(
-      overrides: [
-        if (resetToken != null)
-          resetTokenProvider.overrideWith((ref) => resetToken),
-      ],
+    UncontrolledProviderScope(
+      container: container,
       child: const SpotifyCloneApp(),
     ),
   );
