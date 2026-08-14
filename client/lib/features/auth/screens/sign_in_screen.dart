@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify_clone/core/errors.dart';
 import 'package:spotify_clone/features/auth/auth_providers.dart';
 import 'package:spotify_clone/features/auth/screens/auth_form_widgets.dart';
+import 'package:spotify_clone/features/auth/screens/forgot_password_screen.dart';
 import 'package:spotify_clone/features/auth/screens/sign_up_screen.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
@@ -49,27 +50,6 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     }
   }
 
-  Future<void> _forgotPassword() async {
-    final email = _emailController.text.trim();
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter your email address first')),
-      );
-      return;
-    }
-    final messenger = ScaffoldMessenger.of(context);
-    try {
-      await ref.read(authRepositoryProvider).forgotPassword(email);
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('If an account exists for that email, a reset link is on its way.'),
-        ),
-      );
-    } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(apiErrorMessage(e))));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return AuthScaffold(
@@ -99,7 +79,13 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: _busy ? null : _forgotPassword,
+                  onPressed: _busy
+                      ? null
+                      : () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const ForgotPasswordScreen(),
+                            ),
+                          ),
                   child: const Text('Forgot password?'),
                 ),
               ),

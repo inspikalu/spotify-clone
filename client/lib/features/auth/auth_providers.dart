@@ -41,3 +41,5 @@ final authRepositoryProvider = Provider<AuthRepository>(
 final authStateProvider = NotifierProvider<AuthNotifier, AuthState>(
   AuthNotifier.new,
 );
+
+final resetTokenProvider = StateProvider<String?>((ref) => null);
