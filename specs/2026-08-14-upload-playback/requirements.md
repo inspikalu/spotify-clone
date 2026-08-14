@@ -80,3 +80,6 @@
 - [2026-08-14] Group 3: no engine-level shuffle — the `PlaybackController` owns the play order (`playOrder` in state) so shuffle is deterministic in tests (seed via `randomProvider` override); `next`/`previous` map playOrder → engine source index.
 - [2026-08-14] Group 3: `JustAudioBackground.init` param is `notificationColor:` (0.0.1-beta.17), not `androidNotificationColor:`.
 - [2026-08-14] Group 3: client suite now 23 passing (17 + 6 new); `flutter analyze` clean.
+- [2026-08-14] Group 4: Now Playing repeat button uses `repeat` icon for both off and all modes (Flutter ships no distinct all-mode glyph); highlight + tooltip convey the mode.
+- [2026-08-14] Group 4: widget tests seed a `ProviderContainer` and pump via `UncontrolledProviderScope` — `ProviderScope(container:)` was removed in flutter_riverpod 2.6.1. Shared `test/fakes.dart` holds `FakeAudioEngine` + `testTrack`.
+- [2026-08-14] Group 4: client suite now 27 passing (23 + 4); `flutter analyze` clean.

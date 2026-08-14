@@ -7,8 +7,10 @@ import 'package:spotify_clone/core/navigation/nav_shell.dart';
 import 'package:spotify_clone/core/token_storage.dart';
 import 'package:spotify_clone/features/auth/auth_providers.dart';
 import 'package:spotify_clone/features/auth/auth_repository.dart';
+import 'package:spotify_clone/features/player/player_providers.dart';
 import 'package:spotify_clone/features/tracks/track.dart';
 import 'package:spotify_clone/features/tracks/tracks_providers.dart';
+import 'fakes.dart';
 
 class _FakeAuthRepository extends AuthRepository {
   _FakeAuthRepository()
@@ -51,6 +53,7 @@ Widget harness() => ProviderScope(
       overrides: [
         authRepositoryProvider.overrideWithValue(_FakeAuthRepository()),
         tracksProvider.overrideWith((ref) async => [_track]),
+        audioEngineProvider.overrideWithValue(FakeAudioEngine()),
       ],
       child: const MaterialApp(home: NavShell()),
     );
