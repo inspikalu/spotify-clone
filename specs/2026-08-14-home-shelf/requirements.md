@@ -46,6 +46,11 @@
 - **What Counts as a Passing Verify Step**: every `Verify` bullet in plan.md is a literal command + exact expected output, or literal manual steps + exact expected screen state (all Group verifies above satisfy this).
 - **Rollback Policy**: "**Default: revert.** On an unrecoverable Verify failure, the executor reverts the failing group's changes back to the last passing group's committed state (`git reset --hard <last-good-commit>` or equivalent) and reports BLOCKED against a clean tree. Partial/broken changes are not left in place unless a future spec explicitly states otherwise for a specific group."
 
+## Design Reference (stakeholder-provided)
+- Real Spotify screenshots committed at `specs/references/spotify-screenshots/` (6 jpgs, 2026-08-14). These are the visual source of truth for this phase's Home shelf and Library layout decisions — the executor must match spacing, card proportions, text sizing, and hierarchy to them as closely as the Flutter theme allows.
+- Note: the theme already approximates Spotify tokens (Inter/Manrope font, dark background, green accent per tech-stack.md); this phase only adjusts layout structure, not the token system.
+- Caveat for reviewers: the spec author could not view the images directly (no vision in the authoring model); the mapping of which screenshot shows which screen (Home / Library / Now Playing / Search) was not verified visually. If any layout detail conflicts with a screenshot, the screenshot wins and the executor should note the deviation in the execution report.
+
 ## External Dependencies
 - No new credentials, APIs, or services. Existing, per `resources.md`:
   - Device `R3CR203BN8B` (USB) + the two real mp3s already pushed to `/sdcard/Download/` (Famous-Pluto, Rema-TEA) — walkthrough audio.
