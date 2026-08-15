@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spotify_clone/features/player/now_playing_screen.dart';
 import 'package:spotify_clone/features/player/player_providers.dart';
+import 'package:spotify_clone/features/playlists/playlists_providers.dart';
 import 'fakes.dart';
 
 void main() {
@@ -14,6 +15,7 @@ void main() {
       overrides: [
         audioEngineProvider.overrideWithValue(engine),
         randomProvider.overrideWithValue(Random(42)),
+        likedTracksProvider.overrideWith((ref) => LikedTracksNotifier.empty()),
       ],
     );
     addTearDown(container.dispose);
@@ -47,6 +49,7 @@ void main() {
       overrides: [
         audioEngineProvider.overrideWithValue(engine),
         randomProvider.overrideWithValue(Random(42)),
+        likedTracksProvider.overrideWith((ref) => LikedTracksNotifier.empty()),
       ],
     );
     addTearDown(container.dispose);
