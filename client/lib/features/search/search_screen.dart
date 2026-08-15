@@ -150,6 +150,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     }
                   },
                   decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     hintText: 'What do you want to listen to?',
                     hintStyle: const TextStyle(
                       color: Color(0xFF242424),
@@ -178,7 +180,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             },
                           )
                         : null,
-                    border: InputBorder.none,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide.none,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide.none,
+                    ),
                     contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                   ),
                 ),
