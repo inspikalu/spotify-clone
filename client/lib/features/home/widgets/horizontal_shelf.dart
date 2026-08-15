@@ -87,22 +87,22 @@ class _ShelfCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        width: 140,
+        width: 160,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Cover art 140×140
+            // Cover art 160×160
             ClipRRect(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
               child: SizedBox(
-                width: 140,
-                height: 140,
+                width: 160,
+                height: 160,
                 child: coverUrl == null
                     ? Container(
                         color: const Color(0xFF282828),
                         child: const Icon(
                           Icons.music_note,
-                          size: 52,
+                          size: 60,
                           color: Colors.white38,
                         ),
                       )
@@ -115,7 +115,7 @@ class _ShelfCard extends StatelessWidget {
                           color: const Color(0xFF282828),
                           child: const Icon(
                             Icons.music_note,
-                            size: 52,
+                            size: 60,
                             color: Colors.white38,
                           ),
                         ),
@@ -131,7 +131,7 @@ class _ShelfCard extends StatelessWidget {
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 13,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 2),
@@ -143,8 +143,8 @@ class _ShelfCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: Color(0xFF9E9E9E),
-                fontSize: 11,
+                color: Color(0xFFB3B3B3),
+                fontSize: 12,
               ),
             ),
           ],
