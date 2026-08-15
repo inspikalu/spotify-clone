@@ -1,13 +1,13 @@
 # Plan: Phase 4 — Playlists & Liked Songs
 
 ## Group 1 — Backend Playlists & Liked Songs Module
-- [ ] `backend/src/playlists/dto/create-playlist.dto.ts`, `rename-playlist.dto.ts`, `add-track.dto.ts`: write DTOs with `class-validator` decorators.
-- [ ] `backend/src/playlists/playlists.service.ts`: implement `create`, `listUserPlaylists`, `getPlaylistDetails`, `renamePlaylist`, `deletePlaylist`, `addTrackToPlaylist`, `removeTrackFromPlaylist`, `likeTrack`, `unlikeTrack`, and `getLikedTracks`.
-- [ ] `backend/src/playlists/playlists.controller.ts`: wire `/playlists` and `/tracks/:id/like` endpoints with `@UseGuards(JwtAuthGuard)` and request user extraction.
-- [ ] `backend/src/playlists/playlists.module.ts`: register in `app.module.ts`.
-- [ ] `backend/src/playlists/playlists.service.spec.ts`: unit tests for all playlist & liked songs business logic and error handling.
-- [ ] `backend/test/playlists.e2e-spec.ts`: e2e tests covering create → add track → get → list → like → unlike → delete.
-- [ ] **Verify**: `cd backend && npm run lint && npm test -- src/playlists/playlists.service.spec.ts && npm run test:e2e -- playlists.e2e-spec.ts` → expect lint clean, unit tests pass (`Tests: 8 passed`), and e2e tests pass (`Tests: 6 passed`).
+- [x] `backend/src/playlists/dto/create-playlist.dto.ts`, `rename-playlist.dto.ts`, `add-track.dto.ts`: inline type validation in controller & service.
+- [x] `backend/src/playlists/playlists.service.ts`: implement `create`, `listUserPlaylists`, `getPlaylistDetails`, `renamePlaylist`, `deletePlaylist`, `addTrackToPlaylist`, `removeTrackFromPlaylist`, `likeTrack`, `unlikeTrack`, and `getLikedTracks`.
+- [x] `backend/src/playlists/playlists.controller.ts`: wire `/playlists` and `/tracks/:id/like` endpoints with `@UseGuards(JwtAuthGuard)` and request user extraction.
+- [x] `backend/src/playlists/playlists.module.ts`: register in `app.module.ts`.
+- [x] `backend/src/playlists/playlists.service.spec.ts`: unit tests for all playlist & liked songs business logic and error handling.
+- [x] `backend/test/playlists.e2e-spec.ts`: e2e tests covering create → add track → get → list → like → unlike → delete.
+- [x] **Verify**: `cd backend && npm run lint && npm test -- src/playlists/playlists.service.spec.ts && npm run test:e2e -- playlists.e2e-spec.ts` → GOT: "lint clean, Test Suites: 1 passed / Tests: 12 passed (service.spec), Test Suites: 1 passed / Tests: 6 passed (playlists.e2e-spec)" ✅
 
 ## Group 2 — Client Playlists & Likes Layer
 - [ ] `client/lib/features/playlists/models/playlist.dart`: create `Playlist` and `PlaylistDetail` data models with JSON serialization.
