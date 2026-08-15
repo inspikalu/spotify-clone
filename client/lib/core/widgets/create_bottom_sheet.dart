@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify_clone/core/errors.dart';
 import 'package:spotify_clone/features/playlists/playlists_providers.dart';
 import 'package:spotify_clone/features/playlists/screens/playlist_detail_screen.dart';
 
@@ -134,7 +135,7 @@ void _promptCreatePlaylist(BuildContext context) {
                     }
                   } catch (e) {
                     messenger.showSnackBar(
-                      const SnackBar(content: Text('Failed to create playlist')),
+                      SnackBar(content: Text(apiErrorMessage(e))),
                     );
                   }
                 },
