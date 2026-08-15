@@ -29,12 +29,19 @@ class LikedTracksNotifier extends StateNotifier<AsyncValue<List<Track>>> {
     load();
   }
 
-  final PlaylistsRepository _repository;
+  /// Test-only constructor — starts with empty data, no async fetch.
+  LikedTracksNotifier.empty()
+      : _repository = null,
+        super(const AsyncValue.data([]));
+
+  final PlaylistsRepository? _repository;
 
   Future<void> load() async {
+    final repo = _repository;
+    if (repo == null) return;
     state = const AsyncValue.loading();
     try {
-      final tracks = await _repository.fetchLikedTracks();
+      final tracks = await repo.fetchLikedTracks();
       state = AsyncValue.data(tracks);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -52,14 +59,14 @@ class LikedTracksNotifier extends StateNotifier<AsyncValue<List<Track>>> {
     if (alreadyLiked) {
       state = AsyncValue.data(current.where((t) => t.id != track.id).toList());
       try {
-        await _repository.unlikeTrack(track.id);
+        await _repository?.unlikeTrack(track.id);
       } catch (e) {
         state = AsyncValue.data(current);
       }
     } else {
       state = AsyncValue.data([track, ...current]);
       try {
-        await _repository.likeTrack(track.id);
+        await _repository?.likeTrack(track.id);
       } catch (e) {
         state = AsyncValue.data(current);
       }
