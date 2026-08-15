@@ -1,12 +1,12 @@
 # Plan: Phase 5 — Search
 
 ## Group 1 — Backend Search Module & Endpoints
-- [ ] `backend/src/search/search.service.ts`: implement multi-entity search method querying Prisma with case-insensitive `contains` across `Track` (title, artist, album) and `Playlist` (name, only owned by user or public), with audio signed URLs via `StorageService`.
-- [ ] `backend/src/search/search.controller.ts`: expose `GET /search?q={query}` endpoint protected by `JwtAuthGuard` and extracting user ID.
-- [ ] `backend/src/search/search.module.ts`: register SearchModule and import into `app.module.ts`.
-- [ ] `backend/src/search/search.service.spec.ts`: unit tests for empty query, matching tracks, matching playlists, artist matches, and audio signing.
-- [ ] `backend/test/search.e2e-spec.ts`: e2e tests verifying `GET /search?q=...` returns HTTP 200 with structured results when authenticated.
-- [ ] **Verify**: `cd backend && npm run lint && npm test -- src/search/search.service.spec.ts && npm run test:e2e -- search.e2e-spec.ts` → expect `0 errors`, all search unit and e2e suites passing.
+- [x] `backend/src/search/search.service.ts`: implement multi-entity search method querying Prisma with case-insensitive `contains` across `Track` (title, artist, album) and `Playlist` (name, only owned by user or public), with audio signed URLs via `StorageService`.
+- [x] `backend/src/search/search.controller.ts`: expose `GET /search?q={query}` endpoint protected by `JwtAuthGuard` and extracting user ID.
+- [x] `backend/src/search/search.module.ts`: register SearchModule and import into `app.module.ts`.
+- [x] `backend/src/search/search.service.spec.ts`: unit tests for empty query, matching tracks, matching playlists, artist matches, and audio signing.
+- [x] `backend/test/search.e2e-spec.ts`: e2e tests verifying `GET /search?q=...` returns HTTP 200 with structured results when authenticated.
+- [x] **Verify**: `cd backend && npm run lint && npm test -- src/search/search.service.spec.ts && npm run test:e2e -- search.e2e-spec.ts` → GOT: "lint clean, Test Suites: 1 passed / Tests: 3 passed (search.service.spec), Test Suites: 1 passed / Tests: 3 passed (search.e2e-spec)" ✅
 
 ## Group 2 — Client Search Models & Repository Layer
 - [ ] `client/lib/features/search/models/search_result.dart`: define `SearchResults` model parsing `{ tracks: Track[], playlists: Playlist[], artists: String[], albums: String[] }`.
