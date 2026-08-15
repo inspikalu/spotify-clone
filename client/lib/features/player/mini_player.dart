@@ -94,8 +94,8 @@ class MiniPlayer extends ConsumerWidget {
             // Controls
             Consumer(
               builder: (context, ref, _) {
-                final isLiked =
-                    ref.watch(likedTracksProvider.notifier).isLiked(track.id);
+                final likedState = ref.watch(likedTracksProvider);
+                final isLiked = likedState.value?.any((t) => t.id == track.id) ?? false;
                 return IconButton(
                   tooltip: isLiked ? 'Liked' : 'Like',
                   icon: Icon(
