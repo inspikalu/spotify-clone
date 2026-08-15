@@ -39,9 +39,11 @@ The full scope in `mission.md` (all 6 user stories, pixel-close UI, production D
 - Recent searches (local device storage)
 - Pre-search browse/genre grid
 
-## Phase 6 — Home Polish
-- Multiple horizontal shelves ("Recently played," "Made for you" placeholder logic, genre browse grid)
-- Gradient hero extraction from cover art on playlist/album detail
+## Phase 6 — Home Polish ✅ COMPLETE (2026-08-15, commit 27cbe0f)
+- Multiple horizontal shelves ("Recently played," "Made for you" based on artist-frequency heuristics, "Popular releases")
+- Recently played persisted via TokenStorage, updated on every playTrack call
+- Dynamic ambient gradient extraction (djb2 hash → HSL) on Playlist detail & Now Playing screens
+- Filter pills (All / Music / Podcasts) with Podcasts empty state
 
 ## Phase 7 — Remaining Social Auth
 - Facebook Login integration
