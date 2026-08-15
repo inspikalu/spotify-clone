@@ -17,11 +17,11 @@
 - [x] **Verify**: `cd client && flutter analyze && flutter test test/playlists_repository_test.dart` → GOT: "No issues found!, +5: All tests passed!" ✅
 
 ## Group 3 — Create Playlist & Add to Playlist Flow
-- [ ] `client/lib/core/widgets/create_bottom_sheet.dart`: wire the `Playlist` tile to show a create dialog/prompt ("Give your playlist a name"), invoke `createPlaylist`, and navigate to the newly created playlist screen.
-- [ ] `client/lib/features/playlists/widgets/add_to_playlist_modal.dart`: bottom sheet modal triggered from track options menu listing user's playlists with one-tap add.
-- [ ] `client/lib/features/playlists/widgets/track_options_sheet.dart`: three-dots modal with "Add to playlist", "Like/Unlike", and "View artist".
-- [ ] `client/test/create_playlist_flow_test.dart`: widget tests for creation flow and playlist selection modal.
-- [ ] **Verify**: `cd client && flutter test test/create_playlist_flow_test.dart` → expect `All tests passed!`.
+- [x] `client/lib/core/widgets/create_bottom_sheet.dart`: wire the `Playlist` tile to show a create dialog/prompt ("Give your playlist a name"), invoke `createPlaylist`, and navigate to the newly created playlist screen.
+- [x] `client/lib/features/playlists/widgets/add_to_playlist_modal.dart`: bottom sheet modal triggered from track options menu listing user's playlists with one-tap add.
+- [x] `client/lib/features/playlists/widgets/track_options_sheet.dart`: three-dots modal with "Add to playlist", "Like/Unlike", and "View artist".
+- [x] `client/test/create_playlist_flow_test.dart`: widget tests for creation flow and playlist selection modal.
+- [x] **Verify**: `cd client && flutter test test/create_playlist_flow_test.dart` → GOT: "No issues found!, +2: All tests passed!" ✅
 
 ## Group 4 — Playlist Detail Screen & Liked Songs Auto-Playlist
 - [ ] `client/lib/features/playlists/screens/playlist_detail_screen.dart`: build Spotify playlist hero header (gradient background, title, creator, track count, large play button, shuffle button, three-dots menu to rename/delete).

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify_clone/features/playlists/playlists_providers.dart';
 
-void showCreateBottomSheet(BuildContext context) {
+void showCreateBottomSheet(BuildContext context, [WidgetRef? ref]) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -8,7 +10,7 @@ void showCreateBottomSheet(BuildContext context) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
-    builder: (context) {
+    builder: (ctx) {
       return SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -30,10 +32,8 @@ void showCreateBottomSheet(BuildContext context) {
                   title: 'Playlist',
                   subtitle: 'Create a playlist with songs or episodes',
                   onTap: () {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Playlist creation is coming soon')),
-                    );
+                    Navigator.pop(ctx);
+                    _promptCreatePlaylist(context, ref);
                   },
                 ),
                 _CreateOptionTile(
@@ -41,7 +41,7 @@ void showCreateBottomSheet(BuildContext context) {
                   title: 'Collaborative playlist',
                   subtitle: 'Create a playlist together with friends',
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pop(ctx);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Collaborative playlist coming soon')),
                     );
@@ -52,39 +52,84 @@ void showCreateBottomSheet(BuildContext context) {
                   title: 'Mixed playlist',
                   badgeText: 'Beta',
                   subtitle: 'Mix songs with smooth transitions',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
+                  onTap: () => Navigator.pop(ctx),
                 ),
                 _CreateOptionTile(
                   icon: Icons.bubble_chart_outlined,
                   title: 'Blend',
                   subtitle: "Combine your friends' tastes into a playlist",
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
+                  onTap: () => Navigator.pop(ctx),
                 ),
                 _CreateOptionTile(
                   icon: Icons.auto_awesome,
                   title: 'AI Playlist',
                   badgeText: 'Beta',
                   subtitle: 'Turn your ideas into playlists with AI',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
+                  onTap: () => Navigator.pop(ctx),
                 ),
                 _CreateOptionTile(
                   icon: Icons.speaker_group_outlined,
                   title: 'Jam',
                   subtitle: 'Listen together from anywhere',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
+                  onTap: () => Navigator.pop(ctx),
                 ),
               ],
             ),
           ),
         ),
+      );
+    },
+  );
+}
+
+void _promptCreatePlaylist(BuildContext context, WidgetRef? ref) {
+  final controller = TextEditingController();
+  showDialog(
+    context: context,
+    builder: (dialogCtx) {
+      return AlertDialog(
+        backgroundColor: const Color(0xFF282828),
+        title: const Text(
+          'Give your playlist a name',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            hintText: 'My playlist',
+            hintStyle: TextStyle(color: Color(0xFFB3B3B3)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: const Text('Cancel', style: TextStyle(color: Color(0xFFB3B3B3))),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final name = controller.text.trim();
+              if (name.isEmpty) return;
+              final messenger = ScaffoldMessenger.of(context);
+              Navigator.pop(dialogCtx);
+              if (ref != null) {
+                try {
+                  await ref.read(playlistsRepositoryProvider).createPlaylist(name);
+                  ref.invalidate(userPlaylistsProvider);
+                  messenger.showSnackBar(
+                    SnackBar(content: Text('Created "$name"')),
+                  );
+                } catch (e) {
+                  messenger.showSnackBar(
+                    const SnackBar(content: Text('Failed to create playlist')),
+                  );
+                }
+              }
+            },
+            child: const Text('Create'),
+          ),
+        ],
       );
     },
   );
