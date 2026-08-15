@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify_clone/core/color_extractor.dart';
 import 'package:spotify_clone/features/player/now_playing_screen.dart';
 import 'package:spotify_clone/features/player/player_providers.dart';
 import 'package:spotify_clone/features/playlists/playlists_providers.dart';
@@ -28,15 +29,11 @@ class PlaylistDetailScreen extends ConsumerWidget {
               SliverAppBar(
                 expandedHeight: 280,
                 pinned: true,
-                backgroundColor: const Color(0xFF1E3264),
+                backgroundColor: ambientColorFromSeed(playlistId),
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xFF1E3264), Colors.black],
-                      ),
+                    decoration: BoxDecoration(
+                      gradient: ambientGradient(playlistId),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,

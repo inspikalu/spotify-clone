@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify_clone/core/color_extractor.dart';
 import 'package:spotify_clone/features/player/playback_controller.dart'
     as playback;
 import 'package:spotify_clone/features/player/player_providers.dart';
@@ -45,20 +46,13 @@ class NowPlayingScreen extends ConsumerWidget {
         ? 0.0
         : position.inMilliseconds.clamp(0, sliderMax).toDouble();
 
+    final ambientColor = ambientColorFromSeed(track.id);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF2A1508),
+      backgroundColor: ambientColor,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF4A2510),
-              Color(0xFF201006),
-              Color(0xFF120803),
-            ],
-            stops: [0.0, 0.5, 1.0],
-          ),
+        decoration: BoxDecoration(
+          gradient: ambientGradient(track.id),
         ),
         child: SafeArea(
           child: LayoutBuilder(

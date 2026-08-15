@@ -24,11 +24,11 @@
 - [x] **Verify**: `cd client && flutter analyze && flutter test test/home_screen_test.dart` → expect `No issues found!` and `All tests passed!` — GOT: `No issues found!` / `00:07 +8: All tests passed!` ✅
 
 ## Group 4 — Ambient Gradient Extraction on Detail & Player Screens
-- [ ] `client/lib/features/playlists/screens/playlist_detail_screen.dart`: enhance hero header gradient to use dynamic ambient cover color.
-- [ ] `client/lib/features/player/now_playing_screen.dart`: enhance background gradient to adapt dynamically to playing track cover palette.
-- [ ] `client/test/playlist_detail_screen_test.dart`: verify playlist detail screen renders with ambient gradient.
-- [ ] `client/test/now_playing_screen_test.dart`: verify now playing screen renders with dynamic background gradient.
-- [ ] **Verify**: `cd client && flutter test test/playlist_detail_screen_test.dart test/now_playing_screen_test.dart` → expect `All tests passed!`.
+- [x] `client/lib/features/playlists/screens/playlist_detail_screen.dart`: enhance hero header gradient to use dynamic ambient cover color.
+- [x] `client/lib/features/player/now_playing_screen.dart`: enhance background gradient to adapt dynamically to playing track cover palette.
+- [x] `client/test/playlist_detail_screen_test.dart`: verify playlist detail screen renders with ambient gradient.
+- [x] `client/test/now_playing_screen_test.dart`: verify now playing screen renders with dynamic background gradient.
+- [x] **Verify**: `cd client && flutter test test/playlist_detail_screen_test.dart test/now_playing_screen_test.dart` → expect `All tests passed!` — GOT: `00:09 +6: All tests passed!` ✅
 
 ## Group 5 — Full Regression & Quality Gate
 - [ ] Backend check: `cd backend && npm run lint && npm test && npm run test:e2e` → expect 0 errors, all test suites passing.
