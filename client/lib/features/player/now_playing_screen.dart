@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify_clone/features/player/playback_controller.dart'
     as playback;
 import 'package:spotify_clone/features/player/player_providers.dart';
+import 'package:spotify_clone/features/playlists/playlists_providers.dart';
 
 String _formatDuration(Duration duration) {
   final minutes = duration.inMinutes;
@@ -89,24 +90,54 @@ class NowPlayingScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  Text(
-                    track.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    [
-                      track.artist,
-                      if (track.album != null && track.album!.isNotEmpty)
-                        track.album!,
-                    ].join(' · '),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              track.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              [
+                                track.artist,
+                                if (track.album != null && track.album!.isNotEmpty)
+                                  track.album!,
+                              ].join(' · '),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Consumer(
+                        builder: (context, ref, _) {
+                          final isLiked = ref
+                              .watch(likedTracksProvider.notifier)
+                              .isLiked(track.id);
+                          return IconButton(
+                            icon: Icon(
+                              isLiked ? Icons.favorite : Icons.favorite_border,
+                              color: isLiked
+                                  ? const Color(0xFF1DB954)
+                                  : Colors.white,
+                              size: 28,
+                            ),
+                            onPressed: () => ref
+                                .read(likedTracksProvider.notifier)
+                                .toggleLike(track),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 24),
                   Slider(

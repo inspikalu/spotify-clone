@@ -24,11 +24,11 @@
 - [x] **Verify**: `cd client && flutter test test/create_playlist_flow_test.dart` → GOT: "No issues found!, +2: All tests passed!" ✅
 
 ## Group 4 — Playlist Detail Screen & Liked Songs Auto-Playlist
-- [ ] `client/lib/features/playlists/screens/playlist_detail_screen.dart`: build Spotify playlist hero header (gradient background, title, creator, track count, large play button, shuffle button, three-dots menu to rename/delete).
-- [ ] `client/lib/features/playlists/screens/liked_songs_screen.dart`: dedicated Liked Songs playlist screen with purple gradient hero header (`#450af5` → `#8e8ee5`) fed by `likedTracksProvider`.
-- [ ] `client/lib/features/player/now_playing_screen.dart` & `client/lib/features/player/mini_player.dart`: wire interactive heart/like toggle button connected to `likedTracksProvider`.
-- [ ] `client/test/playlist_detail_screen_test.dart`: widget tests covering header display, track list, play all, like toggle, and empty states.
-- [ ] **Verify**: `cd client && flutter test test/playlist_detail_screen_test.dart` → expect `All tests passed!`.
+- [x] `client/lib/features/playlists/screens/playlist_detail_screen.dart`: build Spotify playlist hero header (gradient background, title, creator, track count, large play button, shuffle button, three-dots menu to rename/delete).
+- [x] `client/lib/features/playlists/screens/liked_songs_screen.dart`: dedicated Liked Songs playlist screen with purple gradient hero header (`#450af5` → `#8e8ee5`) fed by `likedTracksProvider`.
+- [x] `client/lib/features/player/now_playing_screen.dart` & `client/lib/features/player/mini_player.dart`: wire interactive heart/like toggle button connected to `likedTracksProvider`.
+- [x] `client/test/playlist_detail_screen_test.dart`: widget tests covering header display, track list, play all, like toggle, and empty states.
+- [x] **Verify**: `cd client && flutter test test/playlist_detail_screen_test.dart` → GOT: "No issues found!, +2: All tests passed!" ✅
 
 ## Group 5 — Your Library Playlists Integration & Sort
 - [ ] `client/lib/features/tracks/library_screen.dart`: integrate dynamic user playlists under the main list and under the `Playlists` filter pill; tapping "Liked Songs" opens `LikedSongsScreen`; tapping a playlist opens `PlaylistDetailScreen`.

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify_clone/features/player/now_playing_screen.dart';
 import 'package:spotify_clone/features/player/player_providers.dart';
+import 'package:spotify_clone/features/playlists/playlists_providers.dart';
 
 class MiniPlayer extends ConsumerWidget {
   const MiniPlayer({super.key});
@@ -91,14 +92,21 @@ class MiniPlayer extends ConsumerWidget {
               ),
             ),
             // Controls
-            IconButton(
-              tooltip: 'Add to library',
-              icon: const Icon(
-                Icons.add_circle_outline,
-                color: Colors.white,
-                size: 24,
-              ),
-              onPressed: () {},
+            Consumer(
+              builder: (context, ref, _) {
+                final isLiked =
+                    ref.watch(likedTracksProvider.notifier).isLiked(track.id);
+                return IconButton(
+                  tooltip: isLiked ? 'Liked' : 'Like',
+                  icon: Icon(
+                    isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: isLiked ? const Color(0xFF1DB954) : Colors.white,
+                    size: 24,
+                  ),
+                  onPressed: () =>
+                      ref.read(likedTracksProvider.notifier).toggleLike(track),
+                );
+              },
             ),
             IconButton(
               tooltip: isPlaying ? 'Pause' : 'Play',
