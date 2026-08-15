@@ -97,30 +97,28 @@ class PlaybackController extends Notifier<PlaybackState> {
   }
 
   Future<void> playTrack(Track track, List<Track> queue) async {
-    if (queue.isEmpty) {
-      return;
-    }
-    final index = queue.indexOf(track);
-    final targetIndex = index < 0 ? 0 : index;
+    final playableQueue = queue.where((t) => t.audioUrl != null).toList();
+    if (playableQueue.isEmpty) return;
+    final playableIndex = playableQueue.indexOf(track).clamp(0, playableQueue.length - 1);
     state = PlaybackState(
-      queue: queue,
-      playOrder: List<int>.generate(queue.length, (i) => i),
-      currentIndex: targetIndex,
+      queue: playableQueue,
+      playOrder: List<int>.generate(playableQueue.length, (i) => i),
+      currentIndex: playableIndex,
       shuffleEnabled: false,
       repeatMode: state.repeatMode,
       loading: true,
     );
     await _engine.setQueue([
-      for (final item in queue)
+      for (final item in playableQueue)
         (
-          uri: Uri.parse(item.audioUrl),
+          uri: Uri.parse(item.audioUrl!),
           title: item.title,
           artist: item.artist,
           album: item.album,
           artUri: item.coverUrl == null ? null : Uri.parse(item.coverUrl!),
         ),
     ]);
-    await _engine.skipToIndex(targetIndex);
+    await _engine.skipToIndex(playableIndex);
     await _engine.play();
   }
 

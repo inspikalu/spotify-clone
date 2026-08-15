@@ -44,7 +44,7 @@ void main() {
     expect(state.queue, [trackA, trackB]);
     expect(state.currentTrack, trackA);
     expect(engine.queue, hasLength(2));
-    expect(engine.queue!.first.uri.toString(), trackA.audioUrl);
+    expect(engine.queue!.first.uri.toString(), trackA.audioUrl!);
     expect(engine.queue!.first.title, 'Track 1');
     expect(engine.skippedIndexes, [0]);
     expect(engine.playCalls, 1);

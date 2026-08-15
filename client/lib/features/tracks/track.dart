@@ -15,10 +15,12 @@ class Track {
         title: json['title'] as String,
         artist: json['artist'] as String,
         album: json['album'] as String?,
-        durationMs: json['durationMs'] as int?,
+        durationMs: (json['durationMs'] as num?)?.toInt(),
         coverUrl: json['coverUrl'] as String?,
-        audioUrl: json['audioUrl'] as String,
-        createdAt: DateTime.parse(json['createdAt'] as String),
+        audioUrl: json['audioUrl'] as String?,
+        createdAt: json['createdAt'] != null
+            ? DateTime.parse(json['createdAt'] as String)
+            : DateTime.now(),
       );
 
   final String id;
@@ -27,7 +29,7 @@ class Track {
   final String? album;
   final int? durationMs;
   final String? coverUrl;
-  final String audioUrl;
+  final String? audioUrl;
   final DateTime createdAt;
 
   String get durationLabel {
