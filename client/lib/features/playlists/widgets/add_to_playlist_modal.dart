@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify_clone/core/errors.dart';
 import 'package:spotify_clone/features/playlists/playlists_providers.dart';
 import 'package:spotify_clone/features/tracks/track.dart';
 
@@ -81,7 +82,7 @@ void showAddToPlaylistModal(BuildContext context, WidgetRef ref, Track track) {
                               );
                             } catch (e) {
                               messenger.showSnackBar(
-                                const SnackBar(content: Text('Failed to add track to playlist')),
+                                SnackBar(content: Text(apiErrorMessage(e))),
                               );
                             }
                           },
