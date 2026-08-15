@@ -145,9 +145,8 @@ export class TracksService {
     return { ...track, audioStorageKey, coverUrl, audioUrl };
   }
 
-  async listTracks(userId: string) {
+  async listTracks(_userId?: string) {
     const tracks = await this.prisma.track.findMany({
-      where: { ownerId: userId },
       orderBy: { createdAt: 'desc' },
     });
     return Promise.all(
