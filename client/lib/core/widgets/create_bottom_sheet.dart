@@ -3,83 +3,86 @@ import 'package:flutter/material.dart';
 void showCreateBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
+    isScrollControlled: true,
     backgroundColor: const Color(0xFF282828),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
     builder: (context) {
       return SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 36,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade600,
-                  borderRadius: BorderRadius.circular(2),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 36,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade600,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
-              _CreateOptionTile(
-                icon: Icons.music_note,
-                title: 'Playlist',
-                subtitle: 'Create a playlist with songs or episodes',
-                onTap: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Playlist creation is coming soon')),
-                  );
-                },
-              ),
-              _CreateOptionTile(
-                icon: Icons.people_outline,
-                title: 'Collaborative playlist',
-                subtitle: 'Create a playlist together with friends',
-                onTap: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Collaborative playlist coming soon')),
-                  );
-                },
-              ),
-              _CreateOptionTile(
-                icon: Icons.tune,
-                title: 'Mixed playlist',
-                badgeText: 'Beta',
-                subtitle: 'Mix songs with smooth transitions',
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              _CreateOptionTile(
-                icon: Icons.bubble_chart_outlined,
-                title: 'Blend',
-                subtitle: "Combine your friends' tastes into a playlist",
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              _CreateOptionTile(
-                icon: Icons.auto_awesome,
-                title: 'AI Playlist',
-                badgeText: 'Beta',
-                subtitle: 'Turn your ideas into playlists with AI',
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              _CreateOptionTile(
-                icon: Icons.speaker_group_outlined,
-                title: 'Jam',
-                subtitle: 'Listen together from anywhere',
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
+                _CreateOptionTile(
+                  icon: Icons.music_note,
+                  title: 'Playlist',
+                  subtitle: 'Create a playlist with songs or episodes',
+                  onTap: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Playlist creation is coming soon')),
+                    );
+                  },
+                ),
+                _CreateOptionTile(
+                  icon: Icons.people_outline,
+                  title: 'Collaborative playlist',
+                  subtitle: 'Create a playlist together with friends',
+                  onTap: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Collaborative playlist coming soon')),
+                    );
+                  },
+                ),
+                _CreateOptionTile(
+                  icon: Icons.tune,
+                  title: 'Mixed playlist',
+                  badgeText: 'Beta',
+                  subtitle: 'Mix songs with smooth transitions',
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                _CreateOptionTile(
+                  icon: Icons.bubble_chart_outlined,
+                  title: 'Blend',
+                  subtitle: "Combine your friends' tastes into a playlist",
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                _CreateOptionTile(
+                  icon: Icons.auto_awesome,
+                  title: 'AI Playlist',
+                  badgeText: 'Beta',
+                  subtitle: 'Turn your ideas into playlists with AI',
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                _CreateOptionTile(
+                  icon: Icons.speaker_group_outlined,
+                  title: 'Jam',
+                  subtitle: 'Listen together from anywhere',
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       );
