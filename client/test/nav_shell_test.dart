@@ -90,7 +90,7 @@ void main() {
 
     await tester.tap(find.text('Search'));
     await tester.pumpAndSettle();
-    expect(find.text('Search is coming in a later phase'), findsOneWidget);
+    expect(find.text('Browse all'), findsOneWidget);
 
     await tester.tap(find.text('Your Library'));
     await tester.pumpAndSettle();

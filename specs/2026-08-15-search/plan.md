@@ -32,9 +32,9 @@
 - [x] **Verify**: `cd client && flutter analyze && flutter test test/search_screen_test.dart` → GOT: "No issues found!, +2: All tests passed!" ✅
 
 ## Group 5 — Navigation Integration & Full Regression Gate
-- [ ] `client/lib/core/navigation/nav_shell.dart`: ensure Search tab opens the real `SearchScreen` and preserves bottom player / navigation state.
-- [ ] `client/test/nav_shell_test.dart`: update tests to verify switching to Search tab renders search bar and browse grid.
-- [ ] Backend check: `cd backend && npm run lint && npm test && npm run test:e2e` → expect 0 errors, all test suites passing.
-- [ ] Client check: `cd client && flutter analyze && flutter test` → expect 0 analysis issues and all test suites passing.
-- [ ] Logging hygiene: `rg 'console\.log' backend/src/` → no matches; `rg 'debugPrint|print(' client/lib/` → no matches.
-- [ ] **Verify**: `cd backend && npm test && cd ../client && flutter test` → expect all backend tests pass (`45+ passed`) and all client tests pass (`40+ passed`).
+- [x] `client/lib/core/navigation/nav_shell.dart`: ensure Search tab opens the real `SearchScreen` and preserves bottom player / navigation state.
+- [x] `client/test/nav_shell_test.dart`: update tests to verify switching to Search tab renders search bar and browse grid.
+- [x] Backend check: `cd backend && npm run lint && npm test && npm run test:e2e` → GOT: "lint clean, Test Suites: 7 passed / Tests: 44 passed (unit), Test Suites: 5 passed / Tests: 25 passed (e2e)" ✅
+- [x] Client check: `cd client && flutter analyze && flutter test` → GOT: "No issues found!, +41: All tests passed!" ✅
+- [x] Logging hygiene: `rg 'console\.log' backend/src/` → no matches; `rg 'debugPrint|print(' client/lib/` → no matches ✅
+- [x] **Verify**: `cd backend && npm test && cd ../client && flutter test` → GOT: "backend 44 unit + 25 e2e = 69 passed; client 41 passed" ✅
