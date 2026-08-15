@@ -10,11 +10,11 @@
 - [x] **Verify**: `cd backend && npm run lint && npm test -- src/playlists/playlists.service.spec.ts && npm run test:e2e -- playlists.e2e-spec.ts` → GOT: "lint clean, Test Suites: 1 passed / Tests: 12 passed (service.spec), Test Suites: 1 passed / Tests: 6 passed (playlists.e2e-spec)" ✅
 
 ## Group 2 — Client Playlists & Likes Layer
-- [ ] `client/lib/features/playlists/models/playlist.dart`: create `Playlist` and `PlaylistDetail` data models with JSON serialization.
-- [ ] `client/lib/features/playlists/playlists_repository.dart`: API client methods for playlist CRUD, track addition/removal, and like/unlike endpoints.
-- [ ] `client/lib/features/playlists/playlists_providers.dart`: Riverpod providers for `userPlaylistsProvider`, `playlistDetailProvider(id)`, and `likedTracksProvider`.
-- [ ] `client/test/playlists_repository_test.dart`: unit tests verifying all repository calls and JSON parsing.
-- [ ] **Verify**: `cd client && flutter analyze && flutter test test/playlists_repository_test.dart` → expect `No issues found!` and `All tests passed!`.
+- [x] `client/lib/features/playlists/models/playlist.dart`: create `Playlist` and `PlaylistDetail` data models with JSON serialization.
+- [x] `client/lib/features/playlists/playlists_repository.dart`: API client methods for playlist CRUD, track addition/removal, and like/unlike endpoints.
+- [x] `client/lib/features/playlists/playlists_providers.dart`: Riverpod providers for `userPlaylistsProvider`, `playlistDetailProvider(id)`, and `likedTracksProvider`.
+- [x] `client/test/playlists_repository_test.dart`: unit tests verifying all repository calls and JSON parsing.
+- [x] **Verify**: `cd client && flutter analyze && flutter test test/playlists_repository_test.dart` → GOT: "No issues found!, +5: All tests passed!" ✅
 
 ## Group 3 — Create Playlist & Add to Playlist Flow
 - [ ] `client/lib/core/widgets/create_bottom_sheet.dart`: wire the `Playlist` tile to show a create dialog/prompt ("Give your playlist a name"), invoke `createPlaylist`, and navigate to the newly created playlist screen.
