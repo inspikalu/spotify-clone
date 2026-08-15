@@ -8,9 +8,10 @@ import 'package:spotify_clone/core/token_storage.dart';
 import 'package:spotify_clone/features/auth/auth_providers.dart';
 import 'package:spotify_clone/features/auth/auth_repository.dart';
 import 'package:spotify_clone/features/player/player_providers.dart';
+import 'package:spotify_clone/features/playlists/models/playlist.dart';
+import 'package:spotify_clone/features/playlists/playlists_providers.dart';
 import 'package:spotify_clone/features/tracks/track.dart';
 import 'package:spotify_clone/features/tracks/tracks_providers.dart';
-import 'package:spotify_clone/features/playlists/playlists_providers.dart';
 import 'fakes.dart';
 
 class _FakeAuthRepository extends AuthRepository {
@@ -41,6 +42,26 @@ class _FakeAuthRepository extends AuthRepository {
   Future<void> logOut() async {}
 }
 
+final _playlistA = Playlist(
+  id: 'p1',
+  name: 'Alpha Playlist',
+  ownerId: 'u1',
+  trackCount: 5,
+  coverUrls: [],
+  createdAt: DateTime(2026, 8, 14),
+  ownerDisplayName: 'You',
+);
+
+final _playlistZ = Playlist(
+  id: 'p2',
+  name: 'Zeta Playlist',
+  ownerId: 'u1',
+  trackCount: 2,
+  coverUrls: [],
+  createdAt: DateTime(2026, 8, 15),
+  ownerDisplayName: 'You',
+);
+
 final _track = Track(
   id: '1',
   title: 'First Track',
@@ -50,12 +71,12 @@ final _track = Track(
   createdAt: DateTime(2026, 8, 14),
 );
 
-Widget harness() => ProviderScope(
+Widget harness({List<Playlist>? playlists}) => ProviderScope(
       overrides: [
         authRepositoryProvider.overrideWithValue(_FakeAuthRepository()),
         tracksProvider.overrideWith((ref) async => [_track]),
         audioEngineProvider.overrideWithValue(FakeAudioEngine()),
-        userPlaylistsProvider.overrideWith((ref) async => []),
+        userPlaylistsProvider.overrideWith((ref) async => playlists ?? [_playlistA]),
       ],
       child: const MaterialApp(home: NavShell()),
     );
@@ -73,55 +94,27 @@ void main() {
 
     await tester.tap(find.text('Your Library'));
     await tester.pumpAndSettle();
-    expect(find.text('First Track'), findsOneWidget);
+    expect(find.text('Liked Songs'), findsOneWidget);
+    expect(find.text('Alpha Playlist'), findsOneWidget);
 
     await tester.tap(find.text('Home'));
     await tester.pumpAndSettle();
     expect(find.text('Your tracks'), findsOneWidget);
   });
 
-  testWidgets('Library rows show Album/Single subtitles and the sort toggle reorders',
+  testWidgets('Library rows show user playlists and the sort toggle reorders',
       (tester) async {
-    final newer = Track(
-      id: '2',
-      title: 'Zeta',
-      artist: 'Artist Z',
-      album: 'Album X',
-      durationMs: 120000,
-      audioUrl: 'http://test.local/audio/2.mp3',
-      createdAt: DateTime(2026, 8, 14),
-    );
-    final older = Track(
-      id: '1',
-      title: 'Alpha',
-      artist: 'Artist A',
-      durationMs: 90000,
-      audioUrl: 'http://test.local/audio/1.mp3',
-      createdAt: DateTime(2026, 8, 13),
-    );
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          authRepositoryProvider.overrideWithValue(_FakeAuthRepository()),
-          tracksProvider.overrideWith((ref) async => [newer, older]),
-          audioEngineProvider.overrideWithValue(FakeAudioEngine()),
-          userPlaylistsProvider.overrideWith((ref) async => []),
-        ],
-        child: const MaterialApp(home: NavShell()),
-      ),
-    );
+    await tester.pumpWidget(harness(playlists: [_playlistZ, _playlistA]));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Your Library'));
     await tester.pumpAndSettle();
 
     expect(find.text('Your Library'), findsWidgets);
-    expect(find.text('Album \u2022 Artist Z'), findsOneWidget);
-    expect(find.text('Single \u2022 Artist A'), findsOneWidget);
+    expect(find.text('Liked Songs'), findsOneWidget);
+    expect(find.text('Zeta Playlist'), findsOneWidget);
+    expect(find.text('Alpha Playlist'), findsOneWidget);
     expect(find.text('Recents'), findsOneWidget);
-
-    expect(find.text('Zeta'), findsOneWidget);
-    expect(find.text('Alpha'), findsOneWidget);
 
     await tester.tap(find.text('Recents'));
     await tester.pumpAndSettle();

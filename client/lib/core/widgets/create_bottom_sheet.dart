@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify_clone/features/playlists/playlists_providers.dart';
+import 'package:spotify_clone/features/playlists/screens/playlist_detail_screen.dart';
 
 void showCreateBottomSheet(BuildContext context, [WidgetRef? ref]) {
   showModalBottomSheet(
@@ -33,7 +34,7 @@ void showCreateBottomSheet(BuildContext context, [WidgetRef? ref]) {
                   subtitle: 'Create a playlist with songs or episodes',
                   onTap: () {
                     Navigator.pop(ctx);
-                    _promptCreatePlaylist(context, ref);
+                    _promptCreatePlaylist(context);
                   },
                 ),
                 _CreateOptionTile(
@@ -82,54 +83,66 @@ void showCreateBottomSheet(BuildContext context, [WidgetRef? ref]) {
   );
 }
 
-void _promptCreatePlaylist(BuildContext context, WidgetRef? ref) {
+void _promptCreatePlaylist(BuildContext context) {
   final controller = TextEditingController();
   showDialog(
     context: context,
     builder: (dialogCtx) {
-      return AlertDialog(
-        backgroundColor: const Color(0xFF282828),
-        title: const Text(
-          'Give your playlist a name',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            hintText: 'My playlist',
-            hintStyle: TextStyle(color: Color(0xFFB3B3B3)),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogCtx),
-            child: const Text('Cancel', style: TextStyle(color: Color(0xFFB3B3B3))),
-          ),
-          FilledButton(
-            onPressed: () async {
-              final name = controller.text.trim();
-              if (name.isEmpty) return;
-              final messenger = ScaffoldMessenger.of(context);
-              Navigator.pop(dialogCtx);
-              if (ref != null) {
-                try {
-                  await ref.read(playlistsRepositoryProvider).createPlaylist(name);
-                  ref.invalidate(userPlaylistsProvider);
-                  messenger.showSnackBar(
-                    SnackBar(content: Text('Created "$name"')),
-                  );
-                } catch (e) {
-                  messenger.showSnackBar(
-                    const SnackBar(content: Text('Failed to create playlist')),
-                  );
-                }
-              }
-            },
-            child: const Text('Create'),
-          ),
-        ],
+      return Consumer(
+        builder: (context, ref, _) {
+          return AlertDialog(
+            backgroundColor: const Color(0xFF282828),
+            title: const Text(
+              'Give your playlist a name',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                hintText: 'My playlist',
+                hintStyle: TextStyle(color: Color(0xFFB3B3B3)),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogCtx),
+                child: const Text('Cancel', style: TextStyle(color: Color(0xFFB3B3B3))),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  final name = controller.text.trim();
+                  if (name.isEmpty) return;
+                  final messenger = ScaffoldMessenger.of(context);
+                  Navigator.pop(dialogCtx);
+                  try {
+                    final created = await ref.read(playlistsRepositoryProvider).createPlaylist(name);
+                    ref.invalidate(userPlaylistsProvider);
+                    messenger.showSnackBar(
+                      SnackBar(content: Text('Created "$name"')),
+                    );
+                    if (context.mounted) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PlaylistDetailScreen(
+                            playlistId: created.id,
+                            initialName: created.name,
+                          ),
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    messenger.showSnackBar(
+                      const SnackBar(content: Text('Failed to create playlist')),
+                    );
+                  }
+                },
+                child: const Text('Create'),
+              ),
+            ],
+          );
+        },
       );
     },
   );
