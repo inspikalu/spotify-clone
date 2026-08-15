@@ -31,7 +31,7 @@
 - [x] **Verify**: `cd client && flutter test test/playlist_detail_screen_test.dart test/now_playing_screen_test.dart` → expect `All tests passed!` — GOT: `00:09 +6: All tests passed!` ✅
 
 ## Group 5 — Full Regression & Quality Gate
-- [ ] Backend check: `cd backend && npm run lint && npm test && npm run test:e2e` → expect 0 errors, all test suites passing.
-- [ ] Client check: `cd client && flutter analyze && flutter test` → expect 0 analysis issues and all test suites passing.
-- [ ] Logging hygiene check: `rg 'console\.log' backend/src/` → no matches; `rg 'debugPrint|print(' client/lib/` → no matches.
-- [ ] **Verify**: `cd backend && npm test && cd ../client && flutter test` → expect all backend tests pass (`44+ passed`) and all client tests pass (`40+ passed`).
+- [x] Backend check: `cd backend && npm run lint && npm test && npm run test:e2e` → expect 0 errors, all test suites passing — GOT: lint clean, `Tests: 44 passed`, `Tests: 25 passed` ✅
+- [x] Client check: `cd client && flutter analyze && flutter test` → expect 0 analysis issues and all test suites passing — GOT: `No issues found!`, `00:48 +57: All tests passed!` ✅
+- [x] Logging hygiene check: `rg 'console\.log' backend/src/` → no matches; `rg 'debugPrint|print(' client/lib/` → no matches — GOT: no matches ✅
+- [x] **Verify**: `cd backend && npm test && cd ../client && flutter test` → expect all backend tests pass (`44+ passed`) and all client tests pass (`40+ passed`) — GOT: backend `44 passed`, client `57 passed` ✅

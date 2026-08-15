@@ -3,6 +3,9 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:spotify_clone/core/token_storage.dart';
+import 'package:spotify_clone/features/auth/auth_providers.dart';
+import 'package:spotify_clone/features/home/providers/recently_played_provider.dart';
 import 'package:spotify_clone/features/player/playback_controller.dart';
 import 'package:spotify_clone/features/player/player_providers.dart';
 import 'package:spotify_clone/features/tracks/track.dart';
@@ -24,10 +27,15 @@ void main() {
 
   setUp(() {
     engine = FakeAudioEngine();
+    final memStorage = MemoryTokenStorage();
     container = ProviderContainer(
       overrides: [
         audioEngineProvider.overrideWithValue(engine),
         randomProvider.overrideWithValue(Random(42)),
+        tokenStorageProvider.overrideWithValue(memStorage),
+        recentlyPlayedNotifierProvider.overrideWith(
+          (ref) => RecentlyPlayedNotifier(memStorage),
+        ),
       ],
     );
     addTearDown(container.dispose);
