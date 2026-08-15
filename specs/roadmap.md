@@ -30,7 +30,7 @@ The full scope in `mission.md` (all 6 user stories, pixel-close UI, production D
 
 ---
 
-## Phase 4 — Playlists
+## Phase 4 — Playlists ✅ COMPLETE (2026-08-15, commit 1b82445)
 - Create/rename/delete playlist; add/remove/reorder tracks; Liked Songs auto-playlist
 - Playlist detail screen with gradient hero header
 
