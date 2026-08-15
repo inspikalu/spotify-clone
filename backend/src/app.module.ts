@@ -5,6 +5,7 @@ import { HealthController } from './health/health.controller';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TracksModule } from './tracks/tracks.module';
+import { PlaylistsModule } from './playlists/playlists.module';
 
 const REQUIRED_ENV = [
   'DATABASE_URL',
@@ -36,6 +37,7 @@ function validateEnv(config: Record<string, unknown>): Record<string, unknown> {
     UsersModule,
     AuthModule,
     TracksModule,
+    PlaylistsModule,
   ],
   controllers: [HealthController],
 })
