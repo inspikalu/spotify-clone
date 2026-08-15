@@ -9,11 +9,11 @@
 - [x] **Verify**: `cd backend && npm run lint && npm test -- src/search/search.service.spec.ts && npm run test:e2e -- search.e2e-spec.ts` → GOT: "lint clean, Test Suites: 1 passed / Tests: 3 passed (search.service.spec), Test Suites: 1 passed / Tests: 3 passed (search.e2e-spec)" ✅
 
 ## Group 2 — Client Search Models & Repository Layer
-- [ ] `client/lib/features/search/models/search_result.dart`: define `SearchResults` model parsing `{ tracks: Track[], playlists: Playlist[], artists: String[], albums: String[] }`.
-- [ ] `client/lib/features/search/search_repository.dart`: API client method `search(String query)` calling `GET /search?q=...`.
-- [ ] `client/lib/features/search/search_providers.dart`: Riverpod providers for `searchQueryProvider`, `searchResultsProvider(query)`, and `recentSearchesProvider` (persisting recent strings to local storage).
-- [ ] `client/test/search_repository_test.dart`: unit tests verifying SearchResults JSON parsing, repository query encoding, and recent searches persistence.
-- [ ] **Verify**: `cd client && flutter analyze && flutter test test/search_repository_test.dart` → expect `No issues found!` and `All tests passed!`.
+- [x] `client/lib/features/search/models/search_result.dart`: define `SearchResults` model parsing `{ tracks: Track[], playlists: Playlist[], artists: String[], albums: String[] }`.
+- [x] `client/lib/features/search/search_repository.dart`: API client method `search(String query)` calling `GET /search?q=...`.
+- [x] `client/lib/features/search/search_providers.dart`: Riverpod providers for `searchQueryProvider`, `searchResultsProvider(query)`, and `recentSearchesProvider` (persisting recent strings to local storage).
+- [x] `client/test/search_repository_test.dart`: unit tests verifying SearchResults JSON parsing, repository query encoding, and recent searches persistence.
+- [x] **Verify**: `cd client && flutter analyze && flutter test test/search_repository_test.dart` → GOT: "No issues found!, +2: All tests passed!" ✅
 
 ## Group 3 — Pre-Search Browse / Genre Grid UI
 - [ ] `client/lib/features/search/models/browse_category.dart`: model defining standard Spotify browse cards (e.g. Pop, Afrobeats, Hip-Hop, Rock, Chill, R&B, Podcasts, Dance) with custom background colors and sample cover art icons.
