@@ -105,7 +105,7 @@ void main() {
     expect(find.text('Top result'), findsOneWidget);
     expect(find.text('Apala Interlude'), findsWidgets);
     expect(find.text('Afro Hits'), findsOneWidget);
-    expect(find.text('Seyi Vibez'), findsWidgets);
+    expect(find.text('Song • Seyi Vibez'), findsWidgets);
   });
 }
 
