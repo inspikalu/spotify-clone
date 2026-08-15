@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:spotify_clone/core/color_extractor.dart';
 import 'package:spotify_clone/features/player/now_playing_screen.dart';
 import 'package:spotify_clone/features/player/player_providers.dart';
 import 'package:spotify_clone/features/playlists/playlists_providers.dart';
@@ -75,5 +76,39 @@ void main() {
     expect(lastSeek, isNotNull);
     expect(lastSeek, greaterThan(const Duration(seconds: 10)));
     expect(lastSeek, lessThanOrEqualTo(const Duration(seconds: 180)));
+  });
+
+  testWidgets('NowPlayingScreen background uses dynamic ambient gradient from track id',
+      (tester) async {
+    final engine = FakeAudioEngine();
+    final container = ProviderContainer(
+      overrides: [
+        audioEngineProvider.overrideWithValue(engine),
+        randomProvider.overrideWithValue(Random(42)),
+        likedTracksProvider.overrideWith((ref) => LikedTracksNotifier.empty()),
+      ],
+    );
+    addTearDown(container.dispose);
+    final track = testTrack('ambient-test', durationMs: 180000);
+    await container
+        .read(playbackControllerProvider.notifier)
+        .playTrack(track, [track]);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(home: NowPlayingScreen()),
+      ),
+    );
+    engine.playingAt(0);
+    await tester.pump();
+
+    // The scaffold background should be the ambient color from the track id
+    final expectedColor = ambientColorFromSeed(track.id);
+    final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
+    expect(scaffold.backgroundColor, equals(expectedColor));
+
+    // Must NOT be the old static brown color
+    expect(expectedColor, isNot(equals(const Color(0xFF2A1508))));
   });
 }
