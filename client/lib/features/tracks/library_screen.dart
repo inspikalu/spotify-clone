@@ -1,16 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify_clone/core/errors.dart';
 import 'package:spotify_clone/core/widgets/create_bottom_sheet.dart';
 import 'package:spotify_clone/features/auth/auth_notifier.dart';
 import 'package:spotify_clone/features/auth/auth_providers.dart';
-import 'package:spotify_clone/features/player/player_providers.dart';
 import 'package:spotify_clone/features/playlists/models/playlist.dart';
 import 'package:spotify_clone/features/playlists/playlists_providers.dart';
 import 'package:spotify_clone/features/playlists/screens/liked_songs_screen.dart';
 import 'package:spotify_clone/features/playlists/screens/playlist_detail_screen.dart';
-import 'package:spotify_clone/features/tracks/track.dart';
 import 'package:spotify_clone/features/tracks/tracks_providers.dart';
 
 class LibraryScreen extends ConsumerStatefulWidget {
@@ -31,15 +28,6 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
       ref.read(tracksProvider.future),
       ref.read(userPlaylistsProvider.future),
     ]);
-  }
-
-  List<Track> _sortedTracks(List<Track> tracks) {
-    if (!_sortAz) return tracks;
-    final sorted = [...tracks];
-    sorted.sort(
-      (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
-    );
-    return sorted;
   }
 
   List<Playlist> _sortedPlaylists(List<Playlist> playlists) {
@@ -76,7 +64,6 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tracksAsync = ref.watch(tracksProvider);
     final playlistsAsync = ref.watch(userPlaylistsProvider);
     final likedCount = ref.watch(likedTracksProvider).value?.length ?? 0;
 
@@ -101,7 +88,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => showCreateBottomSheet(context, ref),
+            onPressed: () => showCreateBottomSheet(context),
           ),
           const SizedBox(width: 8),
         ],
@@ -182,125 +169,120 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           ),
 
           Expanded(
-            child: switch (tracksAsync) {
-              AsyncData(:final value) when value.isEmpty =>
-                const _EmptyLibrary(),
-              AsyncData(:final value) => RefreshIndicator(
-                  onRefresh: () => _refresh(ref),
-                  child: ListView(
+            child: RefreshIndicator(
+              onRefresh: () => _refresh(ref),
+              child: switch (_filterIndex) {
+                // ── Filter 0: Playlists ────────────────────────────────────
+                0 => switch (playlistsAsync) {
+                    AsyncData(:final value) => ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          // Pinned Liked Songs playlist tile
+                          _SpecialLibraryTile(
+                            icon: Icons.favorite,
+                            gradientColors: const [Color(0xFF450af5), Color(0xFF8e8ee5)],
+                            title: 'Liked Songs',
+                            subtitle: 'Playlist \u2022 $likedCount songs',
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (_) => const LikedSongsScreen()),
+                              );
+                            },
+                          ),
+                          // Pinned Your Episodes tile
+                          _SpecialLibraryTile(
+                            icon: Icons.bookmark,
+                            gradientColors: const [Color(0xFF006450), Color(0xFF056952)],
+                            title: 'Your Episodes',
+                            subtitle: 'Playlist \u2022 Saved & downloaded episodes',
+                            onTap: () {},
+                          ),
+
+                          // User Created Playlists
+                          ..._sortedPlaylists(value).map((playlist) {
+                            return ListTile(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => PlaylistDetailScreen(
+                                      playlistId: playlist.id,
+                                      initialName: playlist.name,
+                                    ),
+                                  ),
+                                );
+                              },
+                              leading: Container(
+                                width: 56,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF282828),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Icon(Icons.music_note, color: Colors.white70, size: 28),
+                              ),
+                              title: Text(
+                                playlist.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              subtitle: Text(
+                                'Playlist \u2022 ${playlist.ownerDisplayName ?? 'You'}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(color: Color(0xFFB3B3B3), fontSize: 13),
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    AsyncError(:final error) => _LibraryError(
+                        message: apiErrorMessage(error),
+                        onRetry: () => ref.invalidate(userPlaylistsProvider),
+                      ),
+                    _ => const Center(child: CircularProgressIndicator()),
+                  },
+
+                // ── Filter 1: Podcasts ─────────────────────────────────────
+                1 => ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     children: [
-                      // Pinned Liked Songs playlist tile
-                      _SpecialLibraryTile(
-                        icon: Icons.favorite,
-                        gradientColors: const [Color(0xFF450af5), Color(0xFF8e8ee5)],
-                        title: 'Liked Songs',
-                        subtitle: 'Playlist \u2022 $likedCount songs',
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const LikedSongsScreen()),
-                          );
-                        },
-                      ),
-                      // Pinned Your Episodes tile
                       _SpecialLibraryTile(
                         icon: Icons.bookmark,
                         gradientColors: const [Color(0xFF006450), Color(0xFF056952)],
                         title: 'Your Episodes',
-                        subtitle: 'Playlist \u2022 Saved & downloaded episodes',
+                        subtitle: 'Saved & downloaded episodes',
                         onTap: () {},
                       ),
-
-                      // User Created Playlists
-                      if (playlistsAsync case AsyncData(value: final playlists))
-                        ..._sortedPlaylists(playlists).map((playlist) {
-                          return ListTile(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => PlaylistDetailScreen(
-                                    playlistId: playlist.id,
-                                    initialName: playlist.name,
-                                  ),
-                                ),
-                              );
-                            },
-                            leading: Container(
-                              width: 56,
-                              height: 56,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF282828),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Icon(Icons.music_note, color: Colors.white70, size: 28),
-                            ),
-                            title: Text(
-                              playlist.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                            subtitle: Text(
-                              'Playlist \u2022 ${playlist.ownerDisplayName ?? 'You'}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(color: Color(0xFFB3B3B3), fontSize: 13),
-                            ),
-                          );
-                        }),
-
-                      // Real tracks list (always visible; filter pills narrow future sections)
-                      ..._sortedTracks(value).map((track) {
-                          return ListTile(
-                            onTap: () => ref
-                                .read(playbackControllerProvider.notifier)
-                                .playTrack(track, value),
-                            leading: _TrackCover(track: track),
-                            title: Text(
-                              track.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                            subtitle: Text(
-                              track.album == null
-                                  ? 'Single \u2022 ${track.artist}'
-                                  : 'Album \u2022 ${track.artist}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Color(0xFFB3B3B3),
-                                fontSize: 13,
-                              ),
-                            ),
-                            trailing: track.durationLabel.isEmpty
-                                ? null
-                                : Text(
-                                    track.durationLabel,
-                                    style: const TextStyle(
-                                      color: Color(0xFFB3B3B3),
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                          );
-                        }),
                     ],
                   ),
-                ),
-              AsyncError(:final error) => _LibraryError(
-                  message: apiErrorMessage(error),
-                  onRetry: () => ref.invalidate(tracksProvider),
-                ),
-              _ => const Center(child: CircularProgressIndicator()),
-            },
+
+                // ── Filter 2: Albums (saved albums only) ───────────────────
+                2 => const _EmptySection(
+                    icon: Icons.album_outlined,
+                    title: 'No saved albums yet',
+                    subtitle: 'Albums you save with the + button will appear here',
+                  ),
+
+                // ── Filter 3: Artists (followed artists only) ──────────────
+                3 => const _EmptySection(
+                    icon: Icons.person_outline,
+                    title: 'No followed artists yet',
+                    subtitle: 'Artists you follow will appear here',
+                  ),
+
+                // ── Filter 4: Downloaded ───────────────────────────────────
+                _ => const _EmptySection(
+                    icon: Icons.download_done_rounded,
+                    title: 'No downloads yet',
+                    subtitle: 'Downloaded music and podcasts will appear here',
+                  ),
+              },
+            ),
           ),
         ],
       ),
@@ -400,73 +382,50 @@ class _SpecialLibraryTile extends StatelessWidget {
   }
 }
 
-class _TrackCover extends StatelessWidget {
-  const _TrackCover({required this.track});
+class _EmptySection extends StatelessWidget {
+  const _EmptySection({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
 
-  final Track track;
-
-  @override
-  Widget build(BuildContext context) {
-    final coverUrl = track.coverUrl;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(6),
-      child: SizedBox(
-        width: 56,
-        height: 56,
-        child: coverUrl == null
-            ? const _CoverPlaceholder()
-            : CachedNetworkImage(
-                imageUrl: coverUrl,
-                fit: BoxFit.cover,
-                errorWidget: (_, _, _) => const _CoverPlaceholder(),
-              ),
-      ),
-    );
-  }
-}
-
-class _CoverPlaceholder extends StatelessWidget {
-  const _CoverPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 56,
-      height: 56,
-      color: const Color(0xFF282828),
-      child: const Center(
-        child: Icon(Icons.music_note, color: Color(0xFFB3B3B3), size: 24),
-      ),
-    );
-  }
-}
-
-class _EmptyLibrary extends StatelessWidget {
-  const _EmptyLibrary();
+  final IconData icon;
+  final String title;
+  final String subtitle;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.library_music,
-            size: 72,
-            color: Theme.of(context).colorScheme.outline,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No tracks yet',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Your saved music will appear here',
-            style: Theme.of(context).textTheme.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 64,
+              color: const Color(0xFFB3B3B3),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                color: Color(0xFFB3B3B3),
+                fontSize: 13,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

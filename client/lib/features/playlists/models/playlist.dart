@@ -15,13 +15,15 @@ class Playlist {
     final rawCovers = json['coverUrls'] as List<dynamic>? ?? [];
     final owner = json['owner'] as Map<String, dynamic>?;
     return Playlist(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      ownerId: json['ownerId'] as String,
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      ownerId: json['ownerId']?.toString() ?? '',
       trackCount: (json['trackCount'] as num?)?.toInt() ?? 0,
       coverUrls: rawCovers.map((e) => e.toString()).toList(),
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      ownerDisplayName: owner?['displayName'] as String? ?? owner?['email'] as String?,
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      ownerDisplayName: owner?['displayName']?.toString() ?? owner?['email']?.toString(),
     );
   }
 
@@ -49,15 +51,18 @@ class PlaylistDetail {
     final rawTracks = json['tracks'] as List<dynamic>? ?? [];
     final owner = json['owner'] as Map<String, dynamic>?;
     return PlaylistDetail(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      ownerId: json['ownerId'] as String,
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      ownerId: json['ownerId']?.toString() ?? '',
       trackCount: (json['trackCount'] as num?)?.toInt() ?? rawTracks.length,
       tracks: rawTracks
-          .map((item) => Track.fromJson(item as Map<String, dynamic>))
+          .whereType<Map<String, dynamic>>()
+          .map((item) => Track.fromJson(item))
           .toList(),
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      ownerDisplayName: owner?['displayName'] as String? ?? owner?['email'] as String?,
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      ownerDisplayName: owner?['displayName']?.toString() ?? owner?['email']?.toString(),
     );
   }
 
