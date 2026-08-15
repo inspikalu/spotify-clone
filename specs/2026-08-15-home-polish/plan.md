@@ -1,10 +1,10 @@
 # Plan: Phase 6 — Home Polish
 
 ## Group 1 — Recently Played Tracking & Local Persistence
-- [ ] `client/lib/features/home/providers/recently_played_provider.dart`: implement `RecentlyPlayedNotifier` saving/loading played track IDs via `TokenStorage` and exposing `recentlyPlayedTracksProvider`.
-- [ ] `client/lib/features/player/playback_controller.dart`: hook into `playTrack` to register the track with `RecentlyPlayedNotifier`.
-- [ ] `client/test/recently_played_provider_test.dart`: unit tests verifying track addition, deduplication, max 10 cap, and loading from storage.
-- [ ] **Verify**: `cd client && flutter test test/recently_played_provider_test.dart` → expect `All tests passed!`.
+- [x] `client/lib/features/home/providers/recently_played_provider.dart`: implement `RecentlyPlayedNotifier` saving/loading played track IDs via `TokenStorage` and exposing `recentlyPlayedTracksProvider`.
+- [x] `client/lib/features/player/playback_controller.dart`: hook into `playTrack` to register the track with `RecentlyPlayedNotifier`.
+- [x] `client/test/recently_played_provider_test.dart`: unit tests verifying track addition, deduplication, max 10 cap, and loading from storage.
+- [x] **Verify**: `cd client && flutter test test/recently_played_provider_test.dart` → expect `All tests passed!` — GOT: `00:04 +5: All tests passed!` ✅
 
 ## Group 2 — Dynamic Color Palette Extraction Utility
 - [ ] `client/lib/core/color_extractor.dart`: implement lightweight, non-blocking dominant color helper for cover art and artist gradients with smooth dark fallback tones.

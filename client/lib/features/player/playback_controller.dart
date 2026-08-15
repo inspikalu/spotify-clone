@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:spotify_clone/features/home/providers/recently_played_provider.dart';
 import 'package:spotify_clone/features/player/audio_engine.dart';
 import 'package:spotify_clone/features/player/player_providers.dart';
 import 'package:spotify_clone/features/tracks/track.dart';
@@ -120,6 +121,9 @@ class PlaybackController extends Notifier<PlaybackState> {
     ]);
     await _engine.skipToIndex(playableIndex);
     await _engine.play();
+    ref
+        .read(recentlyPlayedNotifierProvider.notifier)
+        .addTrack(track.id);
   }
 
   Future<void> togglePlayPause() async {
