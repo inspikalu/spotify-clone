@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:spotify_clone/core/widgets/create_bottom_sheet.dart';
+import 'package:spotify_clone/core/widgets/profile_drawer.dart';
 import 'package:spotify_clone/features/home/home_screen.dart';
 import 'package:spotify_clone/features/player/mini_player.dart';
 import 'package:spotify_clone/features/search/search_screen.dart';
@@ -12,7 +14,7 @@ class NavShell extends StatefulWidget {
 }
 
 class _NavShellState extends State<NavShell> {
-  int _index = 2;
+  int _index = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +24,21 @@ class _NavShellState extends State<NavShell> {
       _ => const LibraryScreen(),
     };
     return Scaffold(
+      drawer: const ProfileDrawer(),
       body: body,
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const MiniPlayer(),
           NavigationBar(
-            selectedIndex: _index,
-            onDestinationSelected: (value) => setState(() => _index = value),
+            selectedIndex: _index > 2 ? 0 : _index,
+            onDestinationSelected: (value) {
+              if (value == 3) {
+                showCreateBottomSheet(context);
+              } else {
+                setState(() => _index = value);
+              }
+            },
             destinations: const [
               NavigationDestination(
                 icon: Icon(Icons.home_outlined),
@@ -44,7 +53,12 @@ class _NavShellState extends State<NavShell> {
               NavigationDestination(
                 icon: Icon(Icons.library_music_outlined),
                 selectedIcon: Icon(Icons.library_music),
-                label: 'Library',
+                label: 'Your Library',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.add),
+                selectedIcon: Icon(Icons.add),
+                label: 'Create',
               ),
             ],
           ),

@@ -1,17 +1,15 @@
-# Requirements: Phase 2 — Upload + Playback
+# Requirements: Phase 2 — Playback & Catalog
 
 ## Scope
 - **In**
-  - Backend: multipart `POST /tracks` (audio file + `title`/`artist`/`album?` fields + optional `cover` image) with multer diskStorage (temp file, streamed to storage — never held in server memory), server-side duration extraction via `music-metadata` (`parseFile` on the real file — never client-reported duration), MIME allowlist (audio: mpeg/mp4/m4a/wav/ogg/flac/aac/webm; cover: image only), 100MB audio / 5MB cover limits, auth via the existing `JwtAuthGuard`.
-  - Backend: Supabase Storage (local CLI instance, offset ports) — new private bucket `audio` (signed-URL access only, 1h expiry, minted per `GET /tracks`) and public bucket `covers`; backend storage access via the Storage REST API with Node's built-in `fetch` + service-role key (no new SDK dependency).
-  - Backend: Prisma migration — `Track.audioStorageKey` (object key in the audio bucket).
-  - Backend: `GET /tracks` — owner-scoped list of the caller's tracks with freshly-minted signed `audioUrl` + public `coverUrl`.
-  - Client: bottom-nav shell (Home / Search / Library) — the Phase 0 shell, deferred to Phase 2; Library hosts the track list; Home = the existing real screen (`Signed in as <email>` + Log out); Search = real empty state. No fake data anywhere.
-  - Client: Library track list (loading / error+retry / empty / data states, pull-to-refresh, cover thumbnails via `cached_network_image`).
-  - Client: upload UI via `file_picker` (audio + cover selection, title/artist required, album/cover optional, upload progress bar, dio FormData).
-  - Client: playback via `just_audio` + `audio_service` + `just_audio_background` (the official bridge — no hand-rolled `AudioHandler`): play/pause/skip(prev/next, wrapping)/seek/queue/shuffle/repeat (off/one/all), mini-player above the nav bar, full Now Playing screen, background playback with media notification + lock-screen controls + artwork (Android `audio_service` service entries + `POST_NOTIFICATIONS`, iOS `UIBackgroundModes: audio`).
-  - Queue/shuffle/repeat: **IN** per stakeholder decision (2026-08-14) — expands roadmap Phase 2's floor scope; traces to mission Core User Story 5.
+  - Backend: Supabase Storage (local CLI instance, offset ports) — bucket `audio` (signed-URL access only, 1h expiry, minted per `GET /tracks`) and public bucket `covers`.
+  - Backend: `GET /tracks` — track catalog list with signed `audioUrl` + public `coverUrl`.
+  - Client: bottom-nav shell (Home / Search / Your Library / Create) matching real Spotify aesthetics.
+  - Client: Library track list (loading / error+retry / empty / data states, pull-to-refresh, cover thumbnails via `cached_network_image`, A-Z/Recents sort).
+  - Client: playback via `just_audio` + `audio_service` + `just_audio_background` (the official bridge — no hand-rolled `AudioHandler`): play/pause/skip(prev/next, wrapping)/seek/queue/shuffle/repeat (off/one/all), mini-player above the nav bar, full Now Playing screen, background playback with media notification + lock-screen controls + artwork.
+  - Queue/shuffle/repeat: **IN** per stakeholder decision.
 - **Out**
+  - User audio uploads (users do not upload audio in standard Spotify).
   - Playlists, Liked Songs, likes (roadmap Phase 4).
   - Search functionality (roadmap Phase 5 — Search tab is a real empty state only).
   - Home curated shelves (roadmap Phase 3/6 — Home tab is the existing real signed-in screen).

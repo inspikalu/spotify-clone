@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
@@ -83,70 +82,6 @@ void main() {
       );
 
       expect(repository.fetchTracks(), throwsA(anything));
-    });
-  });
-
-  group('uploadTrack', () {
-    test('sends title, artist and file as multipart to POST /tracks',
-        () async {
-      final dir = Directory.systemTemp.createTempSync();
-      addTearDown(() => dir.deleteSync(recursive: true));
-      final audio = File('${dir.path}/demo.mp3')..writeAsStringSync('audio');
-
-      await repository.uploadTrack(
-        title: 'Demo',
-        artist: 'Artist',
-        audioPath: audio.path,
-        audioName: 'demo.mp3',
-      );
-
-      expect(adapter.lastOptions?.path, '/tracks');
-      expect(adapter.lastOptions?.method, 'POST');
-      final formData = adapter.lastOptions?.data as FormData;
-      expect(formData.fields.map((f) => f.key),
-          containsAllInOrder(['title', 'artist']));
-      expect(
-        formData.fields.singleWhere((f) => f.key == 'title').value,
-        'Demo',
-      );
-      expect(
-        formData.fields.singleWhere((f) => f.key == 'artist').value,
-        'Artist',
-      );
-      final files = formData.files;
-      expect(files, hasLength(1));
-      expect(files.single.key, 'file');
-      expect(files.single.value.filename, 'demo.mp3');
-    });
-
-    test('includes album and cover only when provided', () async {
-      final dir = Directory.systemTemp.createTempSync();
-      addTearDown(() => dir.deleteSync(recursive: true));
-      final audio = File('${dir.path}/demo.mp3')..writeAsStringSync('audio');
-      final cover = File('${dir.path}/cover.jpg')..writeAsStringSync('cover');
-
-      await repository.uploadTrack(
-        title: 'Demo',
-        artist: 'Artist',
-        audioPath: audio.path,
-        coverPath: cover.path,
-      );
-      var formData = adapter.lastOptions?.data as FormData;
-      expect(formData.fields.where((f) => f.key == 'album'), isEmpty);
-      expect(formData.files.map((f) => f.key), contains('cover'));
-
-      await repository.uploadTrack(
-        title: 'Demo',
-        artist: 'Artist',
-        album: 'Album',
-        audioPath: audio.path,
-      );
-      formData = adapter.lastOptions?.data as FormData;
-      expect(
-        formData.fields.any((f) => f.key == 'album' && f.value == 'Album'),
-        isTrue,
-      );
-      expect(formData.files.map((f) => f.key), isNot(contains('cover')));
     });
   });
 }

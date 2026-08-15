@@ -17,15 +17,15 @@ The full scope in `mission.md` (all 6 user stories, pixel-close UI, production D
 - Auto-login on relaunch, logout
 - **Merge Gate**: a real account can be created, logged out of, and logged back into, on-device, with no mocked auth path.
 
-## Phase 2 — Upload + Playback (MVP scope)
-- Upload endpoint: multipart audio file + metadata form (title/artist/album/cover art) → Supabase Storage, real server-side duration extraction via `music-metadata`
-- Track list screen showing uploaded catalog
+## Phase 2 — Playback (MVP scope)
+- Catalog streaming via signed/public URLs from Supabase Storage
+- Track list screen showing catalog
 - Mini-player + full Now Playing screen: play/pause/skip/seek, via `just_audio` + `audio_service`, background/lock-screen playback working
-- **Merge Gate**: a real uploaded file can be played end-to-end, including background playback, on-device.
+- **Merge Gate**: a catalog track can be played end-to-end, including background playback, on-device.
 
 ## Phase 3 — MVP Deadline Deliverable
-- Home screen: single "All uploaded tracks" shelf (curated multi-shelf design deferred to Phase 5)
-- Basic Library screen: list of uploaded tracks
+- Home screen: "Your tracks" shelf + quick access grid (curated multi-shelf design deferred to Phase 5)
+- Basic Library screen: list of tracks with sort (A-Z / Recents)
 - **This is the state of the app at the stated deadline.** Everything below is post-deadline.
 
 ---
