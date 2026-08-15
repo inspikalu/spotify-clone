@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify_clone/core/errors.dart';
 import 'package:spotify_clone/features/auth/auth_notifier.dart';
 import 'package:spotify_clone/features/auth/auth_providers.dart';
+import 'package:spotify_clone/features/home/providers/recently_played_provider.dart';
+import 'package:spotify_clone/features/home/widgets/horizontal_shelf.dart';
 import 'package:spotify_clone/features/player/now_playing_screen.dart';
 import 'package:spotify_clone/features/player/player_providers.dart';
 import 'package:spotify_clone/features/tracks/track.dart';
@@ -71,15 +73,56 @@ class _HomeContent extends ConsumerStatefulWidget {
 class _HomeContentState extends ConsumerState<_HomeContent> {
   int _filterIndex = 0; // 0=All, 1=Music, 2=Podcasts
 
+  void _play(Track track, List<Track> queue) {
+    ref.read(playbackControllerProvider.notifier).playTrack(track, queue);
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const NowPlayingScreen()),
+    );
+  }
+
+  /// "Made For You" — tracks from artists with ≥2 tracks in the catalog,
+  /// de-duplicated by artist and limited to 10. Falls back to catalog order.
+  List<Track> _madeForYou(List<Track> all) {
+    final artistCounts = <String, int>{};
+    for (final t in all) {
+      artistCounts[t.artist] = (artistCounts[t.artist] ?? 0) + 1;
+    }
+    final preferred =
+        all.where((t) => (artistCounts[t.artist] ?? 0) >= 2).toList();
+    final result = preferred.isNotEmpty ? preferred : all;
+    // deduplicate by artist — keep first occurrence
+    final seen = <String>{};
+    return result.where((t) => seen.add(t.artist)).take(10).toList();
+  }
+
+  /// "Popular releases" — sort by durationMs descending as a proxy for
+  /// "album track" (singles tend to be shorter). Take up to 10.
+  List<Track> _popularReleases(List<Track> all) {
+    final sorted = [...all]
+      ..sort((a, b) =>
+          (b.durationMs ?? 0).compareTo(a.durationMs ?? 0));
+    return sorted.take(10).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final tracks = widget.tracks;
-    final gridItems = tracks.take(8).toList();
-    final shelfItems = tracks;
+    final gridItems = tracks.take(6).toList();
+
+    final recentAsync = ref.watch(recentlyPlayedTracksProvider);
+    final recentTracks =
+        recentAsync.whenOrNull(data: (list) => list) ?? [];
+
+    final madeForYouTracks = _madeForYou(tracks);
+    final popularTracks = _popularReleases(tracks);
+
+    final isPodcasts = _filterIndex == 2;
+    final isAll = _filterIndex == 0;
+    final isMusic = _filterIndex == 1;
 
     return CustomScrollView(
       slivers: [
-        // --- Single line Sticky header with Avatar + All/Music/Podcasts pills ---
+        // ─── Sticky header: Avatar + filter pills ───
         SliverAppBar(
           backgroundColor: const Color(0xFF000000),
           pinned: true,
@@ -117,8 +160,38 @@ class _HomeContentState extends ConsumerState<_HomeContent> {
           ),
         ),
 
-        // --- Quick-access 2-col grid ---
-        if (gridItems.isNotEmpty)
+        // ─── Podcasts filter: empty state ───
+        if (isPodcasts)
+          SliverFillRemaining(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.podcasts_rounded,
+                    size: 72,
+                    color: Color(0xFFB3B3B3),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No podcasts yet',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: const Color(0xFFB3B3B3)),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Podcast streaming is coming soon',
+                    style: TextStyle(color: Color(0xFF6E6E6E), fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+        // ─── Quick-access 2-col grid (All + Music only) ───
+        if (!isPodcasts && gridItems.isNotEmpty) ...[
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             sliver: SliverGrid(
@@ -133,59 +206,53 @@ class _HomeContentState extends ConsumerState<_HomeContent> {
                   final track = gridItems[index];
                   return _QuickAccessTile(
                     track: track,
-                    onTap: () {
-                      ref
-                          .read(playbackControllerProvider.notifier)
-                          .playTrack(track, widget.tracks);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => const NowPlayingScreen()),
-                      );
-                    },
+                    onTap: () => _play(track, tracks),
                   );
                 },
                 childCount: gridItems.length,
               ),
             ),
           ),
+        ],
 
-        // --- "Your tracks" shelf ---
-        if (shelfItems.isNotEmpty) ...[
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        // ─── Recently Played shelf ───
+        if ((isAll || isMusic) && recentTracks.isNotEmpty) ...[
+          const SliverToBoxAdapter(child: SizedBox(height: 28)),
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Your tracks',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-              ),
-            ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 12)),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: 210,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: shelfItems.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 16),
-                itemBuilder: (context, index) {
-                  final track = shelfItems[index];
-                  return _ShelfCard(
-                    track: track,
-                    queue: shelfItems,
-                  );
-                },
-              ),
+            child: HorizontalShelf(
+              title: 'Recently played',
+              tracks: recentTracks,
+              onTrackTap: (track) => _play(track, recentTracks),
             ),
           ),
         ],
 
-        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        // ─── Made For You shelf ───
+        if ((isAll || isMusic) && madeForYouTracks.isNotEmpty) ...[
+          const SliverToBoxAdapter(child: SizedBox(height: 28)),
+          SliverToBoxAdapter(
+            child: HorizontalShelf(
+              title: 'Made for you',
+              subtitle: 'Based on your library',
+              tracks: madeForYouTracks,
+              onTrackTap: (track) => _play(track, madeForYouTracks),
+            ),
+          ),
+        ],
+
+        // ─── Your tracks / Popular releases shelf ───
+        if (!isPodcasts && popularTracks.isNotEmpty) ...[
+          const SliverToBoxAdapter(child: SizedBox(height: 28)),
+          SliverToBoxAdapter(
+            child: HorizontalShelf(
+              title: isMusic ? 'Popular releases' : 'Your tracks',
+              tracks: popularTracks,
+              onTrackTap: (track) => _play(track, popularTracks),
+            ),
+          ),
+        ],
+
+        const SliverToBoxAdapter(child: SizedBox(height: 32)),
       ],
     );
   }
@@ -287,83 +354,6 @@ class _QuickAccessTile extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _ShelfCard extends ConsumerWidget {
-  const _ShelfCard({required this.track, required this.queue});
-
-  final Track track;
-  final List<Track> queue;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return SizedBox(
-      width: 160,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8),
-        onTap: () {
-          ref.read(playbackControllerProvider.notifier).playTrack(track, queue);
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const NowPlayingScreen()),
-          );
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: track.coverUrl == null
-                  ? const _CoverPlaceholder(size: 160)
-                  : CachedNetworkImage(
-                      imageUrl: track.coverUrl!,
-                      width: 160,
-                      height: 160,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, _, _) =>
-                          const _CoverPlaceholder(size: 160),
-                    ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              track.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              track.artist,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Color(0xFFB3B3B3), fontSize: 12),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CoverPlaceholder extends StatelessWidget {
-  const _CoverPlaceholder({required this.size});
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      color: const Color(0xFF282828),
-      child: const Center(
-        child: Icon(Icons.music_note, color: Color(0xFFB3B3B3), size: 40),
       ),
     );
   }

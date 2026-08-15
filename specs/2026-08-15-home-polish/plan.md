@@ -12,16 +12,16 @@
 - [x] **Verify**: `cd client && flutter test test/color_extractor_test.dart` → expect `All tests passed!` — GOT: `00:04 +7: All tests passed!` ✅
 
 ## Group 3 — Multi-Shelf Home Screen Implementation
-- [ ] `client/lib/features/home/widgets/horizontal_shelf.dart`: build reusable Spotify horizontal shelf widget supporting custom titles, subtitles, 160px cover cards, and tap-to-play.
-- [ ] `client/lib/features/home/home_screen.dart`: refactor `HomeScreen` to render:
+- [x] `client/lib/features/home/widgets/horizontal_shelf.dart`: build reusable Spotify horizontal shelf widget supporting custom titles, subtitles, 160px cover cards, and tap-to-play.
+- [x] `client/lib/features/home/home_screen.dart`: refactor `HomeScreen` to render:
   - Sticky top avatar and interactive filter pills (`All`, `Music`, `Podcasts`)
   - 2-column quick-access grid (top 6 tracks)
   - "Recently played" horizontal shelf
   - "Made For You" / "Recommended for today" shelf
   - "Popular releases" shelf
   - Dedicated Podcasts empty state when "Podcasts" filter is selected
-- [ ] `client/test/home_screen_test.dart`: update and add widget tests verifying multi-shelf rendering, filter pill toggling, and quick-access grid.
-- [ ] **Verify**: `cd client && flutter analyze && flutter test test/home_screen_test.dart` → expect `No issues found!` and `All tests passed!`.
+- [x] `client/test/home_screen_test.dart`: update and add widget tests verifying multi-shelf rendering, filter pill toggling, and quick-access grid.
+- [x] **Verify**: `cd client && flutter analyze && flutter test test/home_screen_test.dart` → expect `No issues found!` and `All tests passed!` — GOT: `No issues found!` / `00:07 +8: All tests passed!` ✅
 
 ## Group 4 — Ambient Gradient Extraction on Detail & Player Screens
 - [ ] `client/lib/features/playlists/screens/playlist_detail_screen.dart`: enhance hero header gradient to use dynamic ambient cover color.
