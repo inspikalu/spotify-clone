@@ -34,7 +34,7 @@ The full scope in `mission.md` (all 6 user stories, pixel-close UI, production D
 - Create/rename/delete playlist; add/remove/reorder tracks; Liked Songs auto-playlist
 - Playlist detail screen with gradient hero header
 
-## Phase 5 — Search
+## Phase 5 — Search ✅ COMPLETE (2026-08-15, commit 4e2f544)
 - Search bar with debounce, results across track/artist/album/playlist name
 - Recent searches (local device storage)
 - Pre-search browse/genre grid
