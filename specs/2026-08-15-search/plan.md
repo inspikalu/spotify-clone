@@ -23,13 +23,13 @@
 - [x] **Verify**: `cd client && flutter test test/browse_category_test.dart` → GOT: "No issues found!, +2: All tests passed!" ✅
 
 ## Group 4 — Search Screen with Debounced Live Results & Navigation
-- [ ] `client/lib/features/search/search_screen.dart`: build full Spotify search screen:
+- [x] `client/lib/features/search/search_screen.dart`: build full Spotify search screen:
   - Sticky search bar with clear button and 300ms debounce
   - Filter pills row (Top, Songs, Playlists, Artists, Albums)
   - Pre-search view: Recent Searches + "Browse all" 2-column genre grid
   - Live results view: "Top result" card, matching Songs (tap to play), matching Playlists (tap to open `PlaylistDetailScreen`), and Artist/Album tiles
-- [ ] `client/test/search_screen_test.dart`: widget tests covering initial browse view, debounced typing, results rendering, and tap-to-play interactions.
-- [ ] **Verify**: `cd client && flutter analyze && flutter test test/search_screen_test.dart` → expect `No issues found!` and `All tests passed!`.
+- [x] `client/test/search_screen_test.dart`: widget tests covering initial browse view, debounced typing, results rendering, and tap-to-play interactions.
+- [x] **Verify**: `cd client && flutter analyze && flutter test test/search_screen_test.dart` → GOT: "No issues found!, +2: All tests passed!" ✅
 
 ## Group 5 — Navigation Integration & Full Regression Gate
 - [ ] `client/lib/core/navigation/nav_shell.dart`: ensure Search tab opens the real `SearchScreen` and preserves bottom player / navigation state.
