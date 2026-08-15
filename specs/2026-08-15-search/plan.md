@@ -16,11 +16,11 @@
 - [x] **Verify**: `cd client && flutter analyze && flutter test test/search_repository_test.dart` → GOT: "No issues found!, +2: All tests passed!" ✅
 
 ## Group 3 — Pre-Search Browse / Genre Grid UI
-- [ ] `client/lib/features/search/models/browse_category.dart`: model defining standard Spotify browse cards (e.g. Pop, Afrobeats, Hip-Hop, Rock, Chill, R&B, Podcasts, Dance) with custom background colors and sample cover art icons.
-- [ ] `client/lib/features/search/widgets/browse_category_card.dart`: Spotify-styled 2-column diagonal/tilted card component with bold typography and angled thumbnail preview.
-- [ ] `client/lib/features/search/widgets/recent_searches_view.dart`: chips / list of recently searched terms with tap-to-search and clear button.
-- [ ] `client/test/browse_category_test.dart`: widget tests verifying browse cards render in a 2-column grid and respond to tap.
-- [ ] **Verify**: `cd client && flutter test test/browse_category_test.dart` → expect `No issues found!` and `All tests passed!`.
+- [x] `client/lib/features/search/models/browse_category.dart`: model defining standard Spotify browse cards (e.g. Pop, Afrobeats, Hip-Hop, Rock, Chill, R&B, Podcasts, Dance) with custom background colors and sample cover art icons.
+- [x] `client/lib/features/search/widgets/browse_category_card.dart`: Spotify-styled 2-column diagonal/tilted card component with bold typography and angled thumbnail preview.
+- [x] `client/lib/features/search/widgets/recent_searches_view.dart`: chips / list of recently searched terms with tap-to-search and clear button.
+- [x] `client/test/browse_category_test.dart`: widget tests verifying browse cards render in a 2-column grid and respond to tap.
+- [x] **Verify**: `cd client && flutter test test/browse_category_test.dart` → GOT: "No issues found!, +2: All tests passed!" ✅
 
 ## Group 4 — Search Screen with Debounced Live Results & Navigation
 - [ ] `client/lib/features/search/search_screen.dart`: build full Spotify search screen:
