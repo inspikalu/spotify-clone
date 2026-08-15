@@ -127,17 +127,21 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
             // ── Search Input Field ──────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Container(
                 height: 48,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 child: TextField(
                   controller: _searchController,
                   focusNode: _focusNode,
-                  style: const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                    color: Color(0xFF121212),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
                   cursorColor: const Color(0xFF1DB954),
                   textInputAction: TextInputAction.search,
                   onSubmitted: (value) {
@@ -147,11 +151,27 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   },
                   decoration: InputDecoration(
                     hintText: 'What do you want to listen to?',
-                    hintStyle: const TextStyle(color: Color(0xFF535353), fontSize: 14),
-                    prefixIcon: const Icon(Icons.search, color: Color(0xFF121212), size: 24),
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF242424),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
+                    ),
+                    prefixIcon: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: Icon(
+                        Icons.search,
+                        color: Color(0xFF121212),
+                        size: 26,
+                      ),
+                    ),
+                    prefixIconConstraints: const BoxConstraints(
+                      minWidth: 48,
+                      minHeight: 48,
+                    ),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear, color: Color(0xFF121212), size: 20),
+                            icon: const Icon(Icons.clear, color: Color(0xFF121212), size: 22),
                             onPressed: () {
                               _searchController.clear();
                               ref.read(searchQueryProvider.notifier).state = '';
@@ -159,7 +179,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           )
                         : null,
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                   ),
                 ),
               ),
