@@ -154,10 +154,15 @@ export class TracksService {
         if (!track.audioStorageKey) {
           return { ...track, audioUrl: null };
         }
-        const audioUrl = await this.storage.createSignedUrl(
-          this.audioBucket,
-          track.audioStorageKey,
-        );
+        let audioUrl: string | null = null;
+        try {
+          audioUrl = await this.storage.createSignedUrl(
+            this.audioBucket,
+            track.audioStorageKey,
+          );
+        } catch {
+          audioUrl = null;
+        }
         return { ...track, audioUrl };
       }),
     );
