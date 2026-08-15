@@ -31,6 +31,7 @@ describe('SearchController (e2e)', () => {
     accessToken = signupRes.body.accessToken;
 
     // Seed a test track for search
+    const user = await prisma.user.findUnique({ where: { email } });
     await prisma.track.create({
       data: {
         title: 'Searchable E2E Song',
@@ -38,9 +39,7 @@ describe('SearchController (e2e)', () => {
         album: 'Search Album',
         durationMs: 180000,
         audioStorageKey: 'tracks/test.mp3',
-        uploaderId:
-          signupRes.body.user?.id ??
-          (await prisma.user.findUnique({ where: { email } }))!.id,
+        ownerId: user!.id,
       },
     });
   });
