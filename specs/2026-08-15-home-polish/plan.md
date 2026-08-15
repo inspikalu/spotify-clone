@@ -7,9 +7,9 @@
 - [x] **Verify**: `cd client && flutter test test/recently_played_provider_test.dart` → expect `All tests passed!` — GOT: `00:04 +5: All tests passed!` ✅
 
 ## Group 2 — Dynamic Color Palette Extraction Utility
-- [ ] `client/lib/core/color_extractor.dart`: implement lightweight, non-blocking dominant color helper for cover art and artist gradients with smooth dark fallback tones.
-- [ ] `client/test/color_extractor_test.dart`: unit tests verifying deterministic hue derivation and color contrast.
-- [ ] **Verify**: `cd client && flutter test test/color_extractor_test.dart` → expect `All tests passed!`.
+- [x] `client/lib/core/color_extractor.dart`: implement lightweight, non-blocking dominant color helper for cover art and artist gradients with smooth dark fallback tones.
+- [x] `client/test/color_extractor_test.dart`: unit tests verifying deterministic hue derivation and color contrast.
+- [x] **Verify**: `cd client && flutter test test/color_extractor_test.dart` → expect `All tests passed!` — GOT: `00:04 +7: All tests passed!` ✅
 
 ## Group 3 — Multi-Shelf Home Screen Implementation
 - [ ] `client/lib/features/home/widgets/horizontal_shelf.dart`: build reusable Spotify horizontal shelf widget supporting custom titles, subtitles, 160px cover cards, and tap-to-play.
