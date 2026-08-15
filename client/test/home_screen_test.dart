@@ -198,4 +198,26 @@ void main() {
     expect(find.text('Track 1'), findsWidgets);
     expect(find.text('Track 2'), findsWidgets);
   });
+
+  testWidgets('pull to refresh triggers tracks refresh', (tester) async {
+    final engine = FakeAudioEngine();
+    var fetchCount = 0;
+    await tester.pumpWidget(
+      _harness(engine, [
+        tracksProvider.overrideWith((ref) async {
+          fetchCount++;
+          return [testTrack('1')];
+        }),
+      ]),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(RefreshIndicator), findsOneWidget);
+    expect(fetchCount, 1);
+
+    await tester.fling(find.text('Track 1').first, const Offset(0, 300), 1000);
+    await tester.pumpAndSettle();
+
+    expect(fetchCount, 2);
+  });
 }
