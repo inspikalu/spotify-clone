@@ -6,6 +6,10 @@ import 'package:spotify_clone/core/widgets/create_bottom_sheet.dart';
 import 'package:spotify_clone/features/auth/auth_notifier.dart';
 import 'package:spotify_clone/features/auth/auth_providers.dart';
 import 'package:spotify_clone/features/player/player_providers.dart';
+import 'package:spotify_clone/features/playlists/models/playlist.dart';
+import 'package:spotify_clone/features/playlists/playlists_providers.dart';
+import 'package:spotify_clone/features/playlists/screens/liked_songs_screen.dart';
+import 'package:spotify_clone/features/playlists/screens/playlist_detail_screen.dart';
 import 'package:spotify_clone/features/tracks/track.dart';
 import 'package:spotify_clone/features/tracks/tracks_providers.dart';
 
@@ -22,16 +26,27 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
 
   Future<void> _refresh(WidgetRef ref) async {
     ref.invalidate(tracksProvider);
-    await ref.read(tracksProvider.future);
+    ref.invalidate(userPlaylistsProvider);
+    await Future.wait([
+      ref.read(tracksProvider.future),
+      ref.read(userPlaylistsProvider.future),
+    ]);
   }
 
-  List<Track> _sorted(List<Track> tracks) {
-    if (!_sortAz) {
-      return tracks;
-    }
+  List<Track> _sortedTracks(List<Track> tracks) {
+    if (!_sortAz) return tracks;
     final sorted = [...tracks];
     sorted.sort(
       (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+    );
+    return sorted;
+  }
+
+  List<Playlist> _sortedPlaylists(List<Playlist> playlists) {
+    if (!_sortAz) return playlists;
+    final sorted = [...playlists];
+    sorted.sort(
+      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
     );
     return sorted;
   }
@@ -62,6 +77,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   @override
   Widget build(BuildContext context) {
     final tracksAsync = ref.watch(tracksProvider);
+    final playlistsAsync = ref.watch(userPlaylistsProvider);
+    final likedCount = ref.watch(likedTracksProvider).value?.length ?? 0;
 
     return Scaffold(
       backgroundColor: const Color(0xFF000000),
@@ -84,7 +101,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => showCreateBottomSheet(context),
+            onPressed: () => showCreateBottomSheet(context, ref),
           ),
           const SizedBox(width: 8),
         ],
@@ -173,15 +190,19 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     children: [
-                      // Liked Songs playlist tile
+                      // Pinned Liked Songs playlist tile
                       _SpecialLibraryTile(
                         icon: Icons.favorite,
                         gradientColors: const [Color(0xFF450af5), Color(0xFF8e8ee5)],
                         title: 'Liked Songs',
-                        subtitle: 'Playlist \u2022 ${value.length} songs',
-                        onTap: () {},
+                        subtitle: 'Playlist \u2022 $likedCount songs',
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const LikedSongsScreen()),
+                          );
+                        },
                       ),
-                      // Your Episodes tile
+                      // Pinned Your Episodes tile
                       _SpecialLibraryTile(
                         icon: Icons.bookmark,
                         gradientColors: const [Color(0xFF006450), Color(0xFF056952)],
@@ -189,45 +210,88 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                         subtitle: 'Playlist \u2022 Saved & downloaded episodes',
                         onTap: () {},
                       ),
-                      // Real tracks list
-                      ..._sorted(value).map((track) {
-                        return ListTile(
-                          onTap: () => ref
-                              .read(playbackControllerProvider.notifier)
-                              .playTrack(track, value),
-                          leading: _TrackCover(track: track),
-                          title: Text(
-                            track.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                          subtitle: Text(
-                            track.album == null
-                                ? 'Single \u2022 ${track.artist}'
-                                : 'Album \u2022 ${track.artist}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 13,
-                            ),
-                          ),
-                          trailing: track.durationLabel.isEmpty
-                              ? null
-                              : Text(
-                                  track.durationLabel,
-                                  style: const TextStyle(
-                                    color: Color(0xFFB3B3B3),
-                                    fontSize: 13,
+
+                      // User Created Playlists
+                      if (playlistsAsync case AsyncData(value: final playlists))
+                        ..._sortedPlaylists(playlists).map((playlist) {
+                          return ListTile(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => PlaylistDetailScreen(
+                                    playlistId: playlist.id,
+                                    initialName: playlist.name,
                                   ),
                                 ),
-                        );
-                      }),
+                              );
+                            },
+                            leading: Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF282828),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Icon(Icons.music_note, color: Colors.white70, size: 28),
+                            ),
+                            title: Text(
+                              playlist.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'Playlist \u2022 ${playlist.ownerDisplayName ?? 'You'}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(color: Color(0xFFB3B3B3), fontSize: 13),
+                            ),
+                          );
+                        }),
+
+                      // Real tracks list (always visible; filter pills narrow future sections)
+                      ..._sortedTracks(value).map((track) {
+                          return ListTile(
+                            onTap: () => ref
+                                .read(playbackControllerProvider.notifier)
+                                .playTrack(track, value),
+                            leading: _TrackCover(track: track),
+                            title: Text(
+                              track.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            subtitle: Text(
+                              track.album == null
+                                  ? 'Single \u2022 ${track.artist}'
+                                  : 'Album \u2022 ${track.artist}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Color(0xFFB3B3B3),
+                                fontSize: 13,
+                              ),
+                            ),
+                            trailing: track.durationLabel.isEmpty
+                                ? null
+                                : Text(
+                                    track.durationLabel,
+                                    style: const TextStyle(
+                                      color: Color(0xFFB3B3B3),
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                          );
+                        }),
                     ],
                   ),
                 ),
