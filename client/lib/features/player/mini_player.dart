@@ -14,88 +14,104 @@ class MiniPlayer extends ConsumerWidget {
       return const SizedBox.shrink();
     }
     final isPlaying = ref.watch(isPlayingProvider);
-    final theme = Theme.of(context);
     final coverUrl = track.coverUrl;
-    return Material(
-      color: theme.colorScheme.surfaceContainerHigh,
-      child: InkWell(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const NowPlayingScreen()),
+
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const NowPlayingScreen()),
+      ),
+      child: Container(
+        height: 64,
+        margin: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFF282828),
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: SizedBox(
-          height: 56,
-          child: Row(
-            children: [
-              const SizedBox(width: 8),
-              if (coverUrl == null)
-                CircleAvatar(
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    Icons.music_note,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                )
-              else
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: CachedNetworkImage(
-                    imageUrl: coverUrl,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, _, _) => CircleAvatar(
-                      backgroundColor:
-                          theme.colorScheme.surfaceContainerHighest,
-                      child: Icon(
-                        Icons.music_note,
-                        color: theme.colorScheme.onSurfaceVariant,
+        child: Row(
+          children: [
+            // Album art
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+              ),
+              child: SizedBox(
+                width: 52,
+                height: 52,
+                child: coverUrl == null
+                    ? Container(
+                        color: const Color(0xFF3E3E3E),
+                        child: const Icon(
+                          Icons.music_note,
+                          color: Color(0xFFB3B3B3),
+                          size: 24,
+                        ),
+                      )
+                    : CachedNetworkImage(
+                        imageUrl: coverUrl,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, _, _) => Container(
+                          color: const Color(0xFF3E3E3E),
+                          child: const Icon(
+                            Icons.music_note,
+                            color: Color(0xFFB3B3B3),
+                            size: 24,
+                          ),
+                        ),
                       ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            // Title + artist
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    track.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
                     ),
                   ),
-                ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      track.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                  Text(
+                    track.artist,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Color(0xFFB3B3B3),
+                      fontSize: 12,
                     ),
-                    Text(
-                      track.artist,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              IconButton(
-                tooltip: isPlaying ? 'Pause' : 'Play',
-                icon: Icon(
-                  isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                  size: 32,
-                ),
-                onPressed: () =>
-                    ref.read(playbackControllerProvider.notifier).togglePlayPause(),
+            ),
+            // Controls
+            IconButton(
+              tooltip: 'Add to library',
+              icon: const Icon(
+                Icons.add_circle_outline,
+                color: Colors.white,
+                size: 24,
               ),
-              IconButton(
-                tooltip: 'Next',
-                icon: const Icon(Icons.skip_next_rounded),
-                onPressed: () =>
-                    ref.read(playbackControllerProvider.notifier).next(),
+              onPressed: () {},
+            ),
+            IconButton(
+              tooltip: isPlaying ? 'Pause' : 'Play',
+              icon: Icon(
+                isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                color: Colors.white,
+                size: 32,
               ),
-              const SizedBox(width: 4),
-            ],
-          ),
+              onPressed: () =>
+                  ref.read(playbackControllerProvider.notifier).togglePlayPause(),
+            ),
+            const SizedBox(width: 4),
+          ],
         ),
       ),
     );

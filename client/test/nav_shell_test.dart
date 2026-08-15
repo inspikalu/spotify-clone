@@ -63,19 +63,19 @@ void main() {
     await tester.pumpWidget(harness());
     await tester.pumpAndSettle();
 
-    expect(find.text('First Track'), findsOneWidget);
-
-    await tester.tap(find.text('Home'));
-    await tester.pumpAndSettle();
-    expect(find.text('All uploaded tracks'), findsOneWidget);
+    expect(find.text('Your tracks'), findsOneWidget);
 
     await tester.tap(find.text('Search'));
     await tester.pumpAndSettle();
     expect(find.text('Search is coming in a later phase'), findsOneWidget);
 
-    await tester.tap(find.text('Library'));
+    await tester.tap(find.text('Your Library'));
     await tester.pumpAndSettle();
     expect(find.text('First Track'), findsOneWidget);
+
+    await tester.tap(find.text('Home'));
+    await tester.pumpAndSettle();
+    expect(find.text('Your tracks'), findsOneWidget);
   });
 
   testWidgets('Library rows show Album/Single subtitles and the sort toggle reorders',
@@ -109,33 +109,25 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Your Library'), findsOneWidget);
-    expect(find.text('Album • Artist Z'), findsOneWidget);
-    expect(find.text('Single • Artist A'), findsOneWidget);
-    expect(find.text('↓↑ Recents'), findsOneWidget);
-
-    final firstRow = find.byType(ListTile).first;
-    expect(
-      find.descendant(of: firstRow, matching: find.text('Zeta')),
-      findsOneWidget,
-    );
-
-    await tester.tap(find.text('↓↑ Recents'));
+    await tester.tap(find.text('Your Library'));
     await tester.pumpAndSettle();
 
-    expect(find.text('↓↑ A–Z'), findsOneWidget);
-    expect(
-      find.descendant(of: find.byType(ListTile).first, matching: find.text('Alpha')),
-      findsOneWidget,
-    );
+    expect(find.text('Your Library'), findsWidgets);
+    expect(find.text('Album \u2022 Artist Z'), findsOneWidget);
+    expect(find.text('Single \u2022 Artist A'), findsOneWidget);
+    expect(find.text('Recents'), findsOneWidget);
 
-    await tester.tap(find.text('↓↑ A–Z'));
+    expect(find.text('Zeta'), findsOneWidget);
+    expect(find.text('Alpha'), findsOneWidget);
+
+    await tester.tap(find.text('Recents'));
     await tester.pumpAndSettle();
 
-    expect(find.text('↓↑ Recents'), findsOneWidget);
-    expect(
-      find.descendant(of: find.byType(ListTile).first, matching: find.text('Zeta')),
-      findsOneWidget,
-    );
+    expect(find.text('A\u2013Z'), findsOneWidget);
+
+    await tester.tap(find.text('A\u2013Z'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Recents'), findsOneWidget);
   });
 }

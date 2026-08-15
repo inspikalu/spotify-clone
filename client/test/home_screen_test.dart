@@ -90,7 +90,7 @@ void main() {
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Track 1'), findsOneWidget);
+    expect(find.text('Track 1'), findsWidgets);
     expect(calls, 2);
   });
 
@@ -102,7 +102,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text('No tracks yet — upload one from the Library tab'),
+      find.text('No tracks in your library yet'),
       findsOneWidget,
     );
   });
@@ -118,11 +118,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('All uploaded tracks'), findsOneWidget);
-    expect(find.text('Track 1'), findsOneWidget);
-    expect(find.text('Artist 1'), findsOneWidget);
-    expect(find.text('Track 2'), findsOneWidget);
-    expect(find.text('Artist 2'), findsOneWidget);
+    expect(find.text('Your tracks'), findsOneWidget);
+    expect(find.text('Track 1'), findsWidgets);
+    expect(find.text('Artist 1'), findsWidgets);
+    expect(find.text('Track 2'), findsWidgets);
+    expect(find.text('Artist 2'), findsWidgets);
   });
 
   testWidgets('tapping a card plays the track and opens Now Playing',
@@ -137,7 +137,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Track 1'));
+    await tester.tap(find.text('Track 1').first);
     await tester.pumpAndSettle();
 
     expect(engine.playCalls, 1);
