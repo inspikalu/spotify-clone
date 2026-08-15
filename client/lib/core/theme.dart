@@ -115,5 +115,5 @@ abstract final class AppTheme {
     );
   }
 
-  static String get appName => 'Spotify Clone';
+  static String get appName => 'Spotify';
 }
