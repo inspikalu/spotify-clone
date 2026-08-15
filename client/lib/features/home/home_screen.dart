@@ -8,6 +8,7 @@ import 'package:spotify_clone/features/home/providers/recently_played_provider.d
 import 'package:spotify_clone/features/home/widgets/horizontal_shelf.dart';
 import 'package:spotify_clone/features/player/now_playing_screen.dart';
 import 'package:spotify_clone/features/player/player_providers.dart';
+import 'package:spotify_clone/features/playlists/playlists_providers.dart';
 import 'package:spotify_clone/features/tracks/track.dart';
 import 'package:spotify_clone/features/tracks/tracks_providers.dart';
 
@@ -120,14 +121,24 @@ class _HomeContentState extends ConsumerState<_HomeContent> {
     final isAll = _filterIndex == 0;
     final isMusic = _filterIndex == 1;
 
-    return CustomScrollView(
-      slivers: [
-        // ─── Sticky header: Avatar + filter pills ───
-        SliverAppBar(
-          backgroundColor: const Color(0xFF000000),
-          pinned: true,
-          expandedHeight: 0,
-          toolbarHeight: 56,
+    return RefreshIndicator(
+      color: const Color(0xFF1DB954),
+      backgroundColor: const Color(0xFF282828),
+      onRefresh: () async {
+        ref.invalidate(tracksProvider);
+        ref.invalidate(likedTracksProvider);
+        ref.invalidate(recentlyPlayedNotifierProvider);
+        await ref.read(tracksProvider.future);
+      },
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          // ─── Sticky header: Avatar + filter pills ───
+          SliverAppBar(
+            backgroundColor: const Color(0xFF000000),
+            pinned: true,
+            expandedHeight: 0,
+            toolbarHeight: 56,
           leading: Padding(
             padding: const EdgeInsets.only(left: 16),
             child: Center(child: widget.avatarBuilder()),
@@ -254,6 +265,7 @@ class _HomeContentState extends ConsumerState<_HomeContent> {
 
         const SliverToBoxAdapter(child: SizedBox(height: 32)),
       ],
+    ),
     );
   }
 }
