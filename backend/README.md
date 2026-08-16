@@ -1,4 +1,4 @@
-# Spotify Clone — Backend
+# Spotify Clone - Backend
 
 NestJS 11 REST API for the Spotify clone. See the [root README](../README.md) for the full project overview and setup.
 
