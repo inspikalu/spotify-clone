@@ -20,7 +20,8 @@ services:
     envVars:
       # ── Supabase (your online project) ──────────────────────────────
       - key: DATABASE_URL
-        sync: false           # paste in dashboard (contains password)
+        value: postgresql://postgres.nemnrfrhvfngncclhqec:eOKUB66Rjg4FiQHs@aws-1-eu-west-1.pooler.supabase.com:5432/postgres?sslmode=require
+        # Pooler connection (direct connection is blocked from external hosts like Render)
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
