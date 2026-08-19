@@ -85,13 +85,28 @@ export class AuthService {
       return;
     }
     const token = await this.resetTokens.sign(user.email);
-    const link = `spotifyclone://auth/reset?token=${token}`;
+    const backendBaseUrl =
+      this.config.get<string>('API_BASE_URL') ??
+      'https://spotify-clone-n891.onrender.com';
+    const httpsLink = `${backendBaseUrl}/auth/reset?token=${encodeURIComponent(token)}`;
+    const deepLink = `spotifyclone://auth/reset?token=${encodeURIComponent(token)}`;
+
     try {
       const { error } = await this.resend.emails.send({
         from: this.config.get<string>('RESEND_FROM') ?? 'onboarding@resend.dev',
         to: user.email,
-        subject: 'Reset your password',
-        html: `<p>Tap the link to reset your password:</p><p><a href="${link}">${link}</a></p>`,
+        subject: 'Reset your Spotify password',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; background: #121212; color: #ffffff; border-radius: 8px;">
+            <h2 style="color: #1DB954; margin-top: 0;">Password Reset Request</h2>
+            <p style="color: #b3b3b3; line-height: 1.5;">We received a request to reset your password. Click the button below to reset it in the Spotify app or browser:</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${httpsLink}" style="background-color: #1DB954; color: #000000; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 50px; display: inline-block;">Reset Password</a>
+            </div>
+            <p style="color: #727272; font-size: 12px; margin-top: 30px;">Direct link: <a href="${httpsLink}" style="color: #1DB954;">${httpsLink}</a></p>
+            <p style="color: #727272; font-size: 12px;">If you did not request a password reset, you can safely ignore this email.</p>
+          </div>
+        `,
       });
       if (error) {
         this.logger.warn(
