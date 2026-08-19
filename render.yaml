@@ -1,0 +1,55 @@
+# Render Blueprint — deploy the NestJS backend
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Usage:
+#   1. Push this repo to GitHub/GitLab
+#   2. Go to https://dashboard.render.com → New → Blueprint
+#   3. Connect the repo — Render reads this file automatically
+#   4. Set the environment variables below in the Render dashboard
+#
+# The backend stays on Supabase for Postgres + Storage (no Render Postgres needed).
+
+services:
+  - type: web
+    name: spotify-clone-api
+    runtime: docker
+    plan: starter            # free tier spins down after 15 min; starter ($7/mo) stays alive
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      # ── Supabase (your online project) ──────────────────────────────
+      - key: DATABASE_URL
+        sync: false           # paste in dashboard (contains password)
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_AUDIO_BUCKET
+        value: audio
+      - key: SUPABASE_COVERS_BUCKET
+        value: covers
+
+      # ── Auth ────────────────────────────────────────────────────────
+      - key: JWT_SECRET
+        sync: false           # paste in dashboard
+
+      # ── Token TTLs ──────────────────────────────────────────────────
+      - key: ACCESS_TOKEN_TTL
+        value: 15m
+      - key: REFRESH_TOKEN_TTL
+        value: 30d
+      - key: RESET_TOKEN_TTL
+        value: 15m
+
+      # ── Email (Resend) ──────────────────────────────────────────────
+      - key: RESEND_API_KEY
+        sync: false           # paste in dashboard
+      - key: RESEND_FROM
+        value: onboarding@resend.dev
+
+      # ── Optional ────────────────────────────────────────────────────
+      - key: GOOGLE_CLIENT_ID
+        value: ""             # fill in if using Google sign-in
+      - key: PORT
+        value: "3000"         # Render sets this automatically; the value here is a fallback
