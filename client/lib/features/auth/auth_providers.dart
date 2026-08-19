@@ -7,7 +7,7 @@ import 'package:spotify_clone/features/auth/auth_repository.dart';
 
 const apiBaseUrl = String.fromEnvironment(
   'API_BASE_URL',
-  defaultValue: 'http://10.0.2.2:3000',
+  defaultValue: 'https://spotify-clone-n891.onrender.com',
 );
 
 final tokenStorageProvider = Provider<TokenStorage>(
