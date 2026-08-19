@@ -10,7 +10,7 @@ A pixel-close, production-grade Spotify clone built with **Flutter** (client), *
 spotify-clone/
 ├── backend/     # NestJS 11 REST API (auth, tracks, playlists, search, storage)
 ├── client/      # Flutter mobile app (Android + iOS)
-├── supabase/    # Local Supabase config (Postgres + Storage, offset ports)
+├── supabase/    # Local Supabase config (fallback — online is primary)
 └── specs/       # Mission, tech-stack, roadmap, and per-phase plan/validation docs
 ```
 
@@ -42,19 +42,14 @@ spotify-clone/
 
 - Node.js 22 LTS and npm
 - Flutter 3.44.x stable (Dart 3.12.x)
-- Docker (for local Supabase)
-- Supabase CLI
+- A Supabase project (free tier) — provides Postgres + Storage
+- _(Optional)_ Docker + Supabase CLI — only needed for local Supabase fallback
 
-### 1. Local Supabase
+### 1. Supabase (Online)
 
-The local instance runs on offset ports due to a host port collision: API `54323`, Postgres `54324`, Studio `54325`.
+The project uses an **online Supabase project** (free tier) for both the PostgreSQL database and object storage. Credentials are in `backend/.env` (gitignored).
 
-```bash
-cd supabase
-supabase start
-```
-
-If health checks are flaky on this host, use `supabase start --ignore-health-check`.
+To switch back to a local Supabase instance, comment out the online values in `.env` and uncomment the local block (see the `.env` comments for details).
 
 ### 2. Backend
 
@@ -62,11 +57,11 @@ If health checks are flaky on this host, use `supabase start --ignore-health-che
 cd backend
 npm install
 cp .env.example .env   # fill in DATABASE_URL, JWT_SECRET, SUPABASE_*, RESEND_*, etc.
-npx prisma migrate dev
-npm run start:dev      # http://localhost:3000
+npx prisma migrate deploy   # apply schema to the online DB
+npm run start:dev           # http://localhost:3000
 ```
 
-All env vars except `GOOGLE_CLIENT_ID` are required: startup fails fast if any are missing. Prisma must connect directly to the Postgres port (`54324`), not the pooler.
+All env vars except `GOOGLE_CLIENT_ID` are required: startup fails fast if any are missing. `DATABASE_URL` should point at the Supabase **direct** Postgres connection (port 5432), not the pooler.
 
 ### 3. Client
 
@@ -76,7 +71,7 @@ flutter pub get
 flutter run          # defaults to http://10.0.2.2:3000 (Android emulator)
 ```
 
-Point the app at another host with `--dart-define=API_BASE_URL=http://<host>:3000`. Google sign-in requires `--dart-define=GOOGLE_CLIENT_ID=<id>`. For local Supabase storage URLs, run `adb reverse tcp:54323 tcp:54323`.
+Point the app at another host with `--dart-define=API_BASE_URL=http://<host>:3000`. Google sign-in requires `--dart-define=GOOGLE_CLIENT_ID=<id>`. No `adb reverse` for storage — covers and audio are served directly from the online Supabase project.
 
 ## API Overview
 
@@ -91,7 +86,7 @@ JWT-guarded:
 
 ## Testing
 
-Backend: 69 tests (44 unit + 25 e2e; e2e hit a real server, DB, and Supabase):
+Backend: 69 tests (44 unit + 25 e2e; e2e hit a real server, DB, and the online Supabase):
 
 ```bash
 cd backend
@@ -105,6 +100,37 @@ Client: 62 tests (unit + widget, using fakes for audio engine and token storage)
 cd client
 flutter test
 ```
+
+## Deploying to Render
+
+The backend deploys as a Docker web service on Render. The database and storage stay on Supabase (no Render Postgres needed).
+
+### Quick start
+
+1. Push this repo to GitHub/GitLab
+2. Go to [dashboard.render.com](https://dashboard.render.com) → **New** → **Blueprint** → connect the repo
+3. Render reads `render.yaml` and creates the service automatically
+4. In the Render dashboard, go to the service → **Environment** and paste these secrets:
+   - `DATABASE_URL` — your Supabase direct Postgres connection string
+   - `SUPABASE_URL` — e.g. `https://<ref>.supabase.co`
+   - `SUPABASE_SERVICE_ROLE_KEY` — from Supabase dashboard → Settings → API
+   - `JWT_SECRET` — your existing secret
+   - `RESEND_API_KEY` — from Resend dashboard
+5. Deploy — Render builds the Docker image, runs `prisma migrate deploy`, and starts the server
+
+The health check URL is `https://<service>.onrender.com/health`.
+
+### Client configuration
+
+When building the Flutter app for the deployed backend:
+
+```bash
+flutter run --dart-define=API_BASE_URL=https://<your-service>.onrender.com
+```
+
+### Free tier caveat
+
+Render's free web service spins down after 15 minutes of inactivity, causing a ~30-second cold start on the next request. The `starter` plan ($7/mo) removes this. See `render.yaml` for the plan setting.
 
 ## Roadmap
 
