@@ -69,18 +69,21 @@ void showAddToPlaylistModal(BuildContext context, WidgetRef ref, Track track) {
                             style: const TextStyle(color: Color(0xFFB3B3B3), fontSize: 12),
                           ),
                           onTap: () async {
-                            final messenger = ScaffoldMessenger.of(context);
-                            Navigator.pop(ctx);
+                            // Use ctx (bottom sheet root) for the messenger so
+                            // it stays valid after the modal is dismissed.
+                            final messenger = ScaffoldMessenger.of(ctx);
                             try {
                               await ref
                                   .read(playlistsRepositoryProvider)
                                   .addTrackToPlaylist(playlist.id, track.id);
                               ref.invalidate(userPlaylistsProvider);
                               ref.invalidate(playlistDetailProvider(playlist.id));
+                              if (ctx.mounted) Navigator.pop(ctx);
                               messenger.showSnackBar(
                                 SnackBar(content: Text('Added to ${playlist.name}')),
                               );
                             } catch (e) {
+                              if (ctx.mounted) Navigator.pop(ctx);
                               messenger.showSnackBar(
                                 SnackBar(content: Text(apiErrorMessage(e))),
                               );
