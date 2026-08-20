@@ -8,7 +8,10 @@ import 'package:spotify_clone/features/auth/screens/auth_form_widgets.dart';
 import 'package:spotify_clone/features/auth/screens/forgot_password_screen.dart';
 import 'package:spotify_clone/features/auth/screens/sign_up_screen.dart';
 
-const _googleClientId = String.fromEnvironment('GOOGLE_CLIENT_ID');
+const _googleClientId = String.fromEnvironment(
+  'GOOGLE_CLIENT_ID',
+  defaultValue: '896692012657-4shtrqkpb5jiro05gr7bfhot1ikakmkt.apps.googleusercontent.com',
+);
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
