@@ -24,12 +24,12 @@ class SearchResults {
 
     return SearchResults(
       tracks: rawTracks
-          .whereType<Map<String, dynamic>>()
-          .map((item) => Track.fromJson(item))
+          .whereType<Map>()
+          .map((item) => Track.fromJson(Map<String, dynamic>.from(item)))
           .toList(),
       playlists: rawPlaylists
-          .whereType<Map<String, dynamic>>()
-          .map((item) => Playlist.fromJson(item))
+          .whereType<Map>()
+          .map((item) => Playlist.fromJson(Map<String, dynamic>.from(item)))
           .toList(),
       artists: rawArtists.map((e) => e.toString()).toList(),
       albums: rawAlbums.map((e) => e.toString()).toList(),

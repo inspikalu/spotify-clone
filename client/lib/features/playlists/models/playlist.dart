@@ -23,7 +23,9 @@ class Playlist {
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
           : DateTime.now(),
-      ownerDisplayName: owner?['displayName']?.toString() ?? owner?['email']?.toString(),
+      ownerDisplayName: json['ownerDisplayName']?.toString() ??
+          owner?['displayName']?.toString() ??
+          owner?['email']?.toString(),
     );
   }
 
